@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MTG Cards Translator</title>
+  <link rel="stylesheet" href="popup.css">
+  <meta charset="UTF-8">
+</head>
+<body>
+  <div class="container">
+    <h1>MTG Cards Translator</h1>
+    <div class="flags">
+      <div class="flag-row">
+        <span class="flag" id="flag-es" data-lang="es">🇪🇸</span>
+        <span class="flag" id="flag-fr" data-lang="fr">🇫🇷</span>
+        <span class="flag" id="flag-de" data-lang="de">🇩🇪</span>
+        <span class="flag" id="flag-it" data-lang="it">🇮🇹</span>
+        <span class="flag" id="flag-pt" data-lang="pt">🇵🇹</span>
+      </div>
+      <div class="flag-row">
+        <span class="flag" id="flag-ja" data-lang="ja">🇯🇵</span>
+        <span class="flag" id="flag-ko" data-lang="ko">🇰🇷</span>
+        <span class="flag" id="flag-ru" data-lang="ru">🇷🇺</span>
+        <span class="flag" id="flag-zh" data-lang="zh">🇨🇳</span>
+        <span class="flag" id="flag-zh-tw" data-lang="zh-TW">🇹🇼</span>
+      </div>
+    </div>
+    <textarea id="text-input" placeholder="Entrez le texte de la carte"></textarea>
+    <div class="buttons">
+      <button id="translate-button">Traduction</button>
+      <button id="original-button">Retour original</button>
+      <button id="options-button">Options</button>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

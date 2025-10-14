@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "MTG Cards Translator",
   "version": "1.0",
-  "description": "Traduit dans la langue cible les cartes MTG trouvées sur la page en cours",
+  "description": "Traduit dans la langue cible les cartes MTG trouvées sur MTGTOP8 uniquement pour l'instant",
   "icons": {
     "19": "popup/icons/icon-19.png",
     "38": "popup/icons/icon-38.png",
