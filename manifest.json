@@ -4,10 +4,12 @@
   "version": "1.0",
   "description": "Traduit dans la langue cible les cartes MTG trouvées sur MTGTOP8 uniquement pour l'instant",
   "icons": {
-    "19": "popup/icons/icon-19.png",
-    "38": "popup/icons/icon-38.png",
-    "48": "popup/icons/icon-48.png",
-    "96": "popup/icons/icon-96.png"
+    "16": "icon16.png",
+    "32": "icon32.png",
+    "48": "icon48.png",
+    "64": "icon64.png",
+    "96": "icon96.png",
+    "128": "icon128.png"
   },
   "permissions": [
     "activeTab",
