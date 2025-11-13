@@ -1,0 +1,5 @@
+traduire le contenu de popup selon le drapeau selectionné
+prévoir deux champs texte pour des traductions manuelles + un bouton enregistrer
+prévoir la communication entre popup, background et content
+dans option prévoir accès à un fichier json perso  avec nom de domaine et selecteurs correspondants
+prévoir une selection des éléments en fonction du noms de domaine en cours
