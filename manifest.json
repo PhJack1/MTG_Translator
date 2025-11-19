@@ -12,14 +12,15 @@
     "128": "icon128.png"
   },
   "permissions": [
+    "tabs",
     "activeTab",
     "storage",
     "https://api.scryfall.com/"
   ],
   "browser_action": {
     "default_icon": {
-      "19": "popup/icons/icon-19.png",
-      "38": "popup/icons/icon-38.png"
+      "19": "popup/icons/icon19.png",
+      "38": "popup/icons/icon38.png"
     },
     "default_title": "MTG Cards Translator",
     "default_popup": "popup/popup.html"
@@ -30,7 +31,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://*.mtgtop8.com/*"],
+      "matches": ["<all_urls>"],
       "js": ["content/content.js"]
     }
   ]

@@ -52,9 +52,19 @@ textarea {
   display: block;
 }
 
-.buttons {
+.buttons-container {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap; /* Permet aux boutons de passer à la ligne */
+  gap: 10px; /* Espace entre les boutons */
+  align-items: stretch; /* Étire les boutons pour qu'ils aient la même hauteur */
+}
+
+.buttons-container button {
+  flex: 1 1 auto; /* Permet aux boutons de s'ajuster à la largeur disponible */
+  min-width: 150px; /* Largeur minimale des boutons */
+  white-space: normal; /* Permet au texte de passer à la ligne */
+  height: auto; /* Hauteur automatique pour s'ajuster au contenu */
+  min-height: 40px; /* Hauteur minimale pour les boutons */
 }
 
 button {

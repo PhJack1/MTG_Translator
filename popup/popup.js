@@ -1,10 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
   const flags = document.querySelectorAll('.flag');
-  const textInput = document.getElementById('text-input');
   const translateButton = document.getElementById('translate-button');
-  const originalButton = document.getElementById('original-button');
-  const optionsButton = document.getElementById('options-button');
-
+  const saveDbButton = document.getElementById('saveDb-button');
+  const importButton = document.getElementById('import-button');
+  const exportButton = document.getElementById('export-button');
+  
   let selectedLanguage = 'fr';
 
   console.log('Popup loaded');
@@ -33,26 +33,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   translateButton.addEventListener('click', () => {
-    const text = textInput.value;
-    if (text) {
-      console.log('Translate button clicked, text:', text, 'language:', selectedLanguage);
-      browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        browser.tabs.sendMessage(tabs[0].id, { action: 'translate', text: text, lang: selectedLanguage });
-      });
-    } else {
-      console.log('No text to translate');
-    }
-  });
-
-  originalButton.addEventListener('click', () => {
-    console.log('Original button clicked');
+    console.log('Translate button clicked, language:', selectedLanguage);
     browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      browser.tabs.sendMessage(tabs[0].id, { action: 'original' });
+      console.log('Sending message to tab:', tabs[0].id);
+    browser.tabs.sendMessage(tabs[0].id, { action: 'translate', lang: selectedLanguage });
     });
-  });
-
-  optionsButton.addEventListener('click', () => {
-    console.log('Options button clicked');
-    browser.runtime.openOptionsPage();
   });
 });
