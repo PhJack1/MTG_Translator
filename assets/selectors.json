@@ -18,7 +18,13 @@
       "childIndex": 0 
     }
   ],
-  "exmple.com": [ 
+    "mtgdecks.net": [
+    {
+      "selector": "td.number",
+      "childIndex": 1
+    }
+  ],
+  "exemple.com": [ 
     {
       "selector": "span.translatable",
       "childIndex": 0
