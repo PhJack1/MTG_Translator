@@ -1,0 +1,27 @@
+{
+  "mtgtop8.com": [
+    {
+      "selector": "a[href='#7']"
+    },
+    {
+      "selector": "span.L14"
+    },
+    {
+      "selector": "div.c2"
+    },
+    {
+      "selector": "tr.hover_tr",
+      "childIndex": 0  
+    },
+    {
+      "selector": "tr.chosen_tr",
+      "childIndex": 0 
+    }
+  ],
+  "exmple.com": [ 
+    {
+      "selector": "span.translatable",
+      "childIndex": 0
+    }
+  ]
+}
