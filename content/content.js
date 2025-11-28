@@ -7,43 +7,6 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-async function traduireNomScryfall(nomOriginal, langueCible = "fr") {
-  try {
-    console.log(`Recherche de la traduction pour : "${nomOriginal}" (→ ${langueCible})`);
-
-    // Étape 1 : Récupérer l'oracle_id de la carte
-    const responseEn = await fetch(`https://api.scryfall.com/cards/named?exact=${encodeURIComponent(nomOriginal)}`);
-    const dataEn = await responseEn.json();
-    const oracleId = dataEn.oracle_id;
-    console.log(`Oracle ID : ${oracleId}`);
-
-    // Étape 2 : Chercher les impressions dans la langue cible
-    const responseFr = await fetch(`https://api.scryfall.com/cards/search?q=oracle_id:${oracleId}+lang:${langueCible}`);
-    const dataFr = await responseFr.json();
-
-    if (dataFr.data && dataFr.data.length > 0) {
-      const carte = dataFr.data[0];
-
-      // Cas spécial pour les cartes double-face : on prend le nom du recto (card_faces[0].printed_name)
-      if (carte.card_faces && carte.card_faces.length > 0) {
-        const nomTraduit = carte.card_faces[0].printed_name || carte.card_faces[0].name;
-        console.log(`Traduction trouvée pour "${nomOriginal}" : "${nomTraduit}"`);
-        return nomTraduit;
-      } else {
-        // Cas standard : on prend printed_name ou name
-        const nomTraduit = carte.printed_name || carte.name;
-        console.log(`Traduction trouvée pour "${nomOriginal}" : "${nomTraduit}"`);
-        return nomTraduit;
-      }
-    } else {
-      console.log(`Aucune traduction en ${langueCible} trouvée pour "${nomOriginal}".`);
-      return nomOriginal;
-    }
-  } catch (error) {
-    console.error(`Erreur pour "${nomOriginal}" :`, error);
-    return nomOriginal;
-  }
-}
 
 function getDomainSelectors() {
   // Charger le fichier JSON contenant les sélecteurs
@@ -91,7 +54,7 @@ async function traduireEtRemplacer(langueCible) {
 
     console.log(`Traitement de l'élément : "${nomOriginal}"`);
 
-    const nomTraduit = await traduireNomScryfall(nomOriginal, langueCible);
+    const nomTraduit = await traduireNom(nomOriginal, langueCible);
     console.log(`Remplacement de "${nomOriginal}" par "${nomTraduit}"`);
 
     // Supprimer les événements mouseover et mouseout existants
@@ -116,3 +79,15 @@ async function traduireEtRemplacer(langueCible) {
   console.log("Traduction terminée !");
 }
 
+async function traduireNom(text, targetLanguage) {
+  return new Promise((resolve) => {
+    browser.runtime.sendMessage(
+      { action: "translate", text: text, targetLanguage: targetLanguage }
+    ).then((response) => {
+      resolve(response.translatedText);
+    }).catch((error) => {
+      console.error("Translation error:", error);
+      resolve(text); // Fallback to original text
+    });
+  });
+}
