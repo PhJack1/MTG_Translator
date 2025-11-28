@@ -21,9 +21,7 @@ async function rateLimitedFetch(url) {
  */
 export async function fetchTranslationFromAPI(english, lang = "fr") {
     try {
-        // -----------------------------
-        // Étape 1 : récupérer la carte EN
-        // -----------------------------
+
         const r1 = await rateLimitedFetch(
             `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(english)}`
         );

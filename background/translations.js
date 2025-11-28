@@ -36,7 +36,7 @@ export async function getTranslation(english, lang) {
         return translated;
     }
 
-    // 3) Rien trouvé
+    // 3) Rien trouvé mais au moins rien enregistré localement
     return english;
 }
 
