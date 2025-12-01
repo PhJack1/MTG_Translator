@@ -1,4 +1,6 @@
 import { getTranslation } from "./translations.js";
+import { saveLocalTranslation } from "./db.js";
+
 
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "translate") {
@@ -13,5 +15,15 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
       });
     return true; // Required to use sendResponse asynchronously
   }
+  if (request.action === "saveToDb") {
+    saveLocalTranslation(request.english, request.lang, request.trad)
+      .then(() => {
+        sendResponse({ success: true });
+      })
+      .catch((error) => {
+        console.error("Save error:", error);
+        sendResponse({ success: false, error: error.message });
+      });
+    return true; // Required to use sendResponse asynchronously
+  }
 });
-

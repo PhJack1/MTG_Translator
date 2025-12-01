@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   const flags = document.querySelectorAll('.flag');
   const translateButton = document.getElementById('translate-button');
+  const textEn = document.getElementById('text-inputEn');
+  const textTrad = document.getElementById('text-inputTrad');
   const saveDbButton = document.getElementById('saveDb-button');
   const importButton = document.getElementById('import-button');
   const exportButton = document.getElementById('export-button');
@@ -50,4 +52,19 @@ document.addEventListener('DOMContentLoaded', () => {
       browser.tabs.sendMessage(tabs[0].id, { action: 'translate', lang: selectedLanguage });
     });
   });
+
+saveDbButton.addEventListener('click', () => {
+    console.log('SaveDB button clicked, language:', selectedLanguage);
+    browser.runtime.sendMessage({
+        action: 'saveToDb',
+        english: textEn.value,
+        trad: textTrad.value,
+        lang: selectedLanguage
+    }).then(response => {
+        console.log('Message sent to background script:', response);
+    }).catch(error => {
+        console.error('Error sending message:', error);
+    });
 });
+
+})
