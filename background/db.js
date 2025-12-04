@@ -114,3 +114,93 @@ export async function saveLocalTranslation(english, lang, translatedValue) {
         req.onerror = () => reject(req.error);
     });
 }
+
+// ------------------------------------------------------
+// Fonction : exportToJSON()
+// Exporte les données de IndexedDB vers un objet JSON
+// ------------------------------------------------------
+export async function exportToJSON() {
+    const db = await openDB();
+
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction("cards", "readonly");
+        const store = tx.objectStore("cards");
+        const req = store.getAll();
+
+        req.onsuccess = () => {
+            const data = req.result;
+            resolve(data);
+        };
+
+        req.onerror = () => reject(req.error);
+    });
+}
+
+// ------------------------------------------------------
+// Fonction : importFromJSON(jsonData)
+// Importe et fusionne les données depuis un objet JSON
+// ------------------------------------------------------
+export async function importFromJSON(jsonData) {
+    // Ouvre la base de données IndexedDB de manière asynchrone
+    // await est utilisé car openDB() retourne une promesse
+    const db = await openDB();
+
+    // Retourne une nouvelle promesse pour gérer l'importation de manière asynchrone
+    // La fonction async/await est utilisée à l'intérieur pour gérer les opérations asynchrones
+    return new Promise(async (resolve, reject) => {
+        // Commence une transaction en lecture/écriture sur le store "cards"
+        // Une transaction est une unité de travail qui garantit l'intégrité des données
+        const tx = db.transaction("cards", "readwrite");
+
+        // Obtient une référence au store "cards" dans la transaction
+        // Un store est comme une table dans une base de données relationnelle
+        const store = tx.objectStore("cards");
+
+        try {
+            // Utilisation d'une boucle for...of pour itérer sur chaque carte dans jsonData
+            // jsonData est supposé être un tableau d'objets représentant des cartes
+            for (const card of jsonData) {
+                // Récupère la carte existante dans IndexedDB par son nom anglais (clé primaire)
+                // store.get() est une opération asynchrone qui retourne une requête (request)
+                const req = store.get(card.english);
+
+                // Gestion de l'événement onsuccess de la requête
+                // Cet événement est déclenché lorsque la requête se termine avec succès
+                req.onsuccess = () => {
+                    // req.result contient la carte existante ou undefined si elle n'existe pas
+                    // L'opérateur || est utilisé pour fournir une valeur par défaut si req.result est falsy
+                    const existingCard = req.result || {
+                        english: card.english,  // Utilise le nom anglais de la carte JSON
+                        translations: {}        // Initialise un objet vide pour les traductions
+                    };
+
+                    // Utilisation d'une boucle for...in pour itérer sur les propriétés (langues) de l'objet translations
+                    // card.translations est supposé être un objet avec des clés représentant les langues
+                    for (const lang in card.translations) {
+                        // Ajoute ou met à jour la traduction pour chaque langue
+                        // existingCard.translations[lang] = card.translations[lang] est une affectation
+                        // qui ajoute ou met à jour la traduction pour la langue spécifiée
+                        existingCard.translations[lang] = card.translations[lang];
+                    }
+
+                    // Met à jour la carte dans IndexedDB avec les traductions fusionnées
+                    // store.put() est une opération asynchrone qui met à jour ou ajoute une entrée dans le store
+                    // Si la carte existe déjà, elle est mise à jour ; sinon, elle est ajoutée
+                    store.put(existingCard);
+                };
+
+                // Gestion de l'événement onerror de la requête
+                // Cet événement est déclenché si la requête échoue
+                req.onerror = () => reject(req.error);
+            }
+
+            // Résout la promesse avec true si toutes les opérations se sont bien passées
+            // resolve est une fonction fournie par la promesse pour indiquer que l'opération est terminée avec succès
+            resolve(true);
+        } catch (error) {
+            // Gestion des erreurs qui pourraient survenir dans le bloc try
+            // reject est une fonction fournie par la promesse pour indiquer que l'opération a échoué
+            reject(error);
+        }
+    });
+}

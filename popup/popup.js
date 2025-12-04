@@ -55,6 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 saveDbButton.addEventListener('click', () => {
     console.log('SaveDB button clicked, language:', selectedLanguage);
+
+    // Check if any of the fields are empty or contain only spaces
+    if (!textEn.value.trim() || !textTrad.value.trim()) {
+        console.log('Error: One or more fields are empty or contain only spaces.');
+        return;
+    }
+
     browser.runtime.sendMessage({
         action: 'saveToDb',
         english: textEn.value,
@@ -67,4 +74,6 @@ saveDbButton.addEventListener('click', () => {
     });
 });
 
+
+// FIN DE LA POPUP (on domload etc)
 })
