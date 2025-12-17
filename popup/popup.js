@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const importButton = document.getElementById('import-button');
   const exportButton = document.getElementById('export-button');
 
+
+
   let selectedLanguage = 'fr'; // Valeur par défaut
 
   console.log('Popup loaded');
@@ -73,6 +75,36 @@ saveDbButton.addEventListener('click', () => {
         console.error('Error sending message:', error);
     });
 });
+
+
+exportButton.addEventListener('click', () => {
+    browser.runtime.sendMessage({
+        action: 'exportDb'
+    }).then(response => {
+        if (response.status === 'success') {
+            const blob = new Blob([response.data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'localDB_MTG_Cards_Names.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } else {
+            console.error('Error exporting data:', response.message);
+        }
+    }).catch(error => {
+        console.error('Error sending message:', error);
+    });
+});
+
+importButton.addEventListener('click', () => {   /// A BOSSER CREER LA PAGE BIEN LA RANGER POUR LAPPELER ET LA FERMER APRES AVOIR GERER LIMPORT DE FICHIER
+    browser.tabs.create({
+        url: browser.runtime.getURL('import.html')
+    });
+});
+
 
 
 // FIN DE LA POPUP (on domload etc)

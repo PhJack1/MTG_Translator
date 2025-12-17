@@ -1,5 +1,5 @@
 import { getTranslation } from "./translations.js";
-import { saveLocalTranslation } from "./db.js";
+import { saveLocalTranslation, importFromJSON, exportToJSON   } from "./db.js";
 
 
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -26,4 +26,14 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
       });
     return true; // Required to use sendResponse asynchronously
   }
+if (request.action === 'exportDb') {
+        exportToJSON().then(jsonData => {
+            sendResponse({ status: 'success', data: JSON.stringify(jsonData, null, 2) });
+        }).catch(error => {
+            console.error('Error exporting data:', error);
+            sendResponse({ status: 'error', message: 'Error exporting data' });
+        });
+        return true; // Keep the message channel open for the response
+    }
+
 });
