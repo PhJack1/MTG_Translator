@@ -7,11 +7,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const importButton = document.getElementById('import-button');
   const exportButton = document.getElementById('export-button');
 
-
-
   let selectedLanguage = 'fr'; // Valeur par défaut
 
   console.log('Popup loaded');
+
+  // Fonction pour appliquer les traductions sur tous les éléments avec data-translations
+  function applyTranslations(lang) {
+    document.querySelectorAll('[data-translations]').forEach(el => {
+      try {
+        const translations = JSON.parse(el.dataset.translations);
+        if (translations[lang]) {
+          if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+            el.placeholder = translations[lang]; // Pour les placeholders
+          } else {
+            el.textContent = translations[lang]; // Pour le texte des éléments
+          }
+        }
+      } catch (e) {
+        console.error('Error parsing translations for', el, e);
+      }
+    });
+  }
 
   // Restaurer la langue sauvegardée
   browser.storage.local.get('selectedLanguage').then(result => {
@@ -22,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('No stored language, using default FR');
     }
 
-    // Appliquer la sélection graphique
+    // Appliquer la sélection graphique et traductions
     flags.forEach(flag => {
       if (flag.getAttribute('data-lang') === selectedLanguage) {
         flag.classList.add('selected');
@@ -30,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
         flag.classList.remove('selected');
       }
     });
+    applyTranslations(selectedLanguage);
   });
 
   // Gestion du clic sur les drapeaux
@@ -43,6 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Sauvegarde dans le stockage
       browser.storage.local.set({ selectedLanguage });
+
+      // Appliquer les traductions immédiatement
+      applyTranslations(selectedLanguage);
     });
   });
 
@@ -55,57 +75,57 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-saveDbButton.addEventListener('click', () => {
+  saveDbButton.addEventListener('click', () => {
     console.log('SaveDB button clicked, language:', selectedLanguage);
 
-    // Check if any of the fields are empty or contain only spaces
     if (!textEn.value.trim() || !textTrad.value.trim()) {
-        console.log('Error: One or more fields are empty or contain only spaces.');
-        return;
+      console.log('Error: One or more fields are empty or contain only spaces.');
+      return;
     }
 
     browser.runtime.sendMessage({
-        action: 'saveToDb',
-        english: textEn.value,
-        trad: textTrad.value,
-        lang: selectedLanguage
+      action: 'saveToDb',
+      english: textEn.value,
+      trad: textTrad.value,
+      lang: selectedLanguage
     }).then(response => {
-        console.log('Message sent to background script:', response);
+      console.log('Message sent to background script:', response);
     }).catch(error => {
-        console.error('Error sending message:', error);
+      console.error('Error sending message:', error);
     });
-});
+  });
 
-
-exportButton.addEventListener('click', () => {
+  exportButton.addEventListener('click', () => {
     browser.runtime.sendMessage({
-        action: 'exportDb'
+      action: 'exportDb'
     }).then(response => {
-        if (response.status === 'success') {
-            const blob = new Blob([response.data], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'localDB_MTG_Cards_Names.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        } else {
-            console.error('Error exporting data:', response.message);
-        }
+      if (response.status === 'success') {
+        const blob = new Blob([response.data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'localDB_MTG_Cards_Names.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } else {
+        console.error('Error exporting data:', response.message);
+      }
     }).catch(error => {
-        console.error('Error sending message:', error);
+      console.error('Error sending message:', error);
     });
-});
+  });
 
-importButton.addEventListener('click', () => {   /// A BOSSER CREER LA PAGE BIEN LA RANGER POUR LAPPELER ET LA FERMER APRES AVOIR GERER LIMPORT DE FICHIER
-    browser.tabs.create({
-        url: browser.runtime.getURL('/background/import.html')
+  importButton.addEventListener('click', () => {
+    browser.windows.create({
+      url: browser.runtime.getURL('background/import.html'),
+      type: 'popup',
+      width: 480,
+      height: 300,
+      focused: true
     });
+  });
+
+  // FIN DE LA POPUP (on domload etc)
 });
-
-
-
-// FIN DE LA POPUP (on domload etc)
-})
