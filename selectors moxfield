@@ -1,0 +1,11 @@
+function scrapeCardNames() {
+  return [...document.querySelectorAll('a.table-deck-row-link.text-body')]
+    .map(a =>
+      [...a.querySelectorAll('span.underline')]
+        .map(span => span.textContent.replace(/\s+$/,'').replace(/^\s+/,''))
+        .join(' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+    );
+}
+

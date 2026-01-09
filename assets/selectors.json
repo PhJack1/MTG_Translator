@@ -24,6 +24,19 @@
       "childIndex": 1
     }
   ],
+    "mtggoldfish.com": [
+    {
+      "selector": "span.card_id.card_name > a[data-card-id]"
+    }
+  ],
+  "moxfield.com": [
+  {
+    "selector": "a.table-deck-row-link.text-body",
+    "mode": "composite",
+    "childSelector": "span.underline"
+  }
+],
+
   "exemple.com": [ 
     {
       "selector": "span.translatable",

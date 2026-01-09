@@ -101,7 +101,7 @@ exportButton.addEventListener('click', () => {
 
 importButton.addEventListener('click', () => {   /// A BOSSER CREER LA PAGE BIEN LA RANGER POUR LAPPELER ET LA FERMER APRES AVOIR GERER LIMPORT DE FICHIER
     browser.tabs.create({
-        url: browser.runtime.getURL('import.html')
+        url: browser.runtime.getURL('/background/import.html')
     });
 });
 

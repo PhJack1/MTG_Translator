@@ -1,0 +1,5 @@
+function scrapeCardNames() {
+  return [...document.querySelectorAll('span.card_id.card_name > a[data-card-id]')]
+    .map(a => a.textContent.trim());
+}
+

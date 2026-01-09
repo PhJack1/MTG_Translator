@@ -17,18 +17,27 @@ function getDomainSelectors() {
 
 async function selectionnerElementsATraduire() {
   const domainSelectors = await getDomainSelectors();
-  const currentDomain = window.location.hostname;
-
-  // Trouver les sélecteurs pour le domaine actuel
+  const currentDomain = window.location.hostname.replace(/^www\./, "");
   const selectors = domainSelectors[currentDomain] || [];
 
-  // Sélectionner les éléments en utilisant les sélecteurs trouvés
   const elements = selectors.flatMap(item => {
     const parentElements = document.querySelectorAll(item.selector);
+
     return Array.from(parentElements).map(parent => {
+      // Mode spécial Moxfield (noms splittés en plusieurs spans)
+      if (item.mode === "composite") {
+        return {
+          element: parent,
+          composite: true,
+          childSelector: item.childSelector
+        };
+      }
+
+      // Mode normal
       if (item.childIndex !== undefined && parent.children.length > item.childIndex) {
         return parent.children[item.childIndex];
       }
+
       return parent;
     });
   });
@@ -37,47 +46,77 @@ async function selectionnerElementsATraduire() {
   return elements;
 }
 
+
 async function traduireEtRemplacer(langueCible) {
   const elements = await selectionnerElementsATraduire();
 
-  for (const element of elements) {
+  for (const item of elements) {
+    let element;
     let nomOriginal;
 
-    // Vérifier si un attribut contenant le nom original existe déjà
-    if (element.hasAttribute('data-original-name')) {
-      nomOriginal = element.getAttribute('data-original-name');
-    } else {
+    // 🔹 Cas Moxfield (nom composite)
+    if (item.composite) {
+      element = item.element;
+      const parts = [...element.querySelectorAll(item.childSelector)];
+      nomOriginal = parts.map(s => s.textContent.trim()).join(" ");
+    } 
+    // 🔹 Cas normal
+    else {
+      element = item;
       nomOriginal = element.textContent.trim();
-      // Ajouter un attribut contenant le nom original
-      element.setAttribute('data-original-name', nomOriginal);
     }
 
-    console.log(`Traitement de l'élément : "${nomOriginal}"`);
+    if (!nomOriginal) continue;
+
+    // Stocker le nom original
+    if (!element.hasAttribute("data-original-name")) {
+      element.setAttribute("data-original-name", nomOriginal);
+    } else {
+      nomOriginal = element.getAttribute("data-original-name");
+    }
+
+    console.log(`Traitement : "${nomOriginal}"`);
 
     const nomTraduit = await traduireNom(nomOriginal, langueCible);
-    console.log(`Remplacement de "${nomOriginal}" par "${nomTraduit}"`);
 
-    // Supprimer les événements mouseover et mouseout existants
-    element.removeEventListener('mouseover', () => {
-      element.textContent = nomOriginal;
-    });
-    element.removeEventListener('mouseout', () => {
+    // 🔹 Écriture du texte traduit
+    if (item.composite) {
+      const parts = [...element.querySelectorAll(item.childSelector)];
+      parts.forEach((span, i) => {
+        span.textContent = (i === 0) ? nomTraduit : "";
+      });
+    } else {
       element.textContent = nomTraduit;
-    });
+    }
 
-    // Mettre à jour le texte de l'élément
-    element.textContent = nomTraduit;
+    // 🔹 Hover original / traduit
+    element.onmouseenter = () => {
+      if (item.composite) {
+        const parts = [...element.querySelectorAll(item.childSelector)];
+        const original = element.getAttribute("data-original-name");
+        parts.forEach((span, i) => {
+          span.textContent = i === 0 ? original : "";
+        });
+      } else {
+        element.textContent = element.getAttribute("data-original-name");
+      }
+    };
 
-    // Ajouter de nouveaux événements mouseover et mouseout
-    element.addEventListener('mouseover', () => {
-      element.textContent = nomOriginal;
-    });
-    element.addEventListener('mouseout', () => {
-      element.textContent = nomTraduit;
-    });
+    element.onmouseleave = () => {
+      if (item.composite) {
+        const parts = [...element.querySelectorAll(item.childSelector)];
+        parts.forEach((span, i) => {
+          span.textContent = i === 0 ? nomTraduit : "";
+        });
+      } else {
+        element.textContent = nomTraduit;
+      }
+    };
   }
+
   console.log("Traduction terminée !");
 }
+
 
 async function traduireNom(text, targetLanguage) {
   return new Promise((resolve) => {
