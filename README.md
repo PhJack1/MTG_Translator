@@ -1,113 +1,117 @@
 # MTG Cards Translator
 
-Extension de navigateur Firefox permettant de traduire automatiquement les noms de cartes Magic: The Gathering sur les sites de decklists les plus populaires.
+🇫🇷 [Français](README.fr.md) | 🇪🇸 [Español](README.es.md) | 🇩🇪 [Deutsch](README.de.md) | 🇮🇹 [Italiano](README.it.md) | 🇵🇹 [Português](README.pt.md) | 🇯🇵 [日本語](README.ja.md) | 🇰🇷 [한국어](README.ko.md) | 🇷🇺 [Русский](README.ru.md) | 🇨🇳 [简体中文](README.zh.md) | 🇹🇼 [繁體中文](README.zh-TW.md)
 
-## 🎯 Fonctionnalités
+---
 
-- **Traduction en temps réel** : Traduit instantanément les noms de cartes MTG dans la langue de votre choix
-- **Support multilingue** : 10 langues disponibles (FR, ES, DE, IT, PT, JA, KO, RU, ZH, ZH-TW)
-- **Sites compatibles** :
+Firefox browser extension to automatically translate Magic: The Gathering card names on the most popular decklist websites.
+
+## 🎯 Features
+
+- **Real-time translation**: Instantly translates MTG card names into your chosen language
+- **Multilingual support**: 10 languages available (FR, ES, DE, IT, PT, JA, KO, RU, ZH, ZH-TW)
+- **Compatible sites**:
   - MTGTop8
   - MTGGoldfish
   - Moxfield
   - MTGDecks.net
-- **Cache local intelligent** : Utilise IndexedDB pour stocker les traductions et réduire les appels API
-- **Mode survol** : Affichez le nom original en anglais en survolant une carte traduite
-- **Import/Export** : Sauvegardez et partagez votre base de traductions personnalisée
+- **Smart local cache**: Uses IndexedDB to store translations and reduce API calls
+- **Hover mode**: Display the original English name by hovering over a translated card
+- **Import/Export**: Save and share your custom translation database
 
 ## 📦 Installation
 
-### Depuis Firefox Add-ons (à venir)
-*(En attente de publication)*
+### From Firefox Add-ons (coming soon)
+*(Awaiting publication)*
 
-### Installation manuelle (développeurs)
+### Manual installation (developers)
 
-1. Clonez le dépôt :
+1. Clone the repository:
 ```bash
 git clone https://github.com/PhJack1/MTG_Translator.git
 cd MTG_Translator
 ```
 
-2. Dans Firefox :
-   - Tapez `about:debugging` dans la barre d'adresse
-   - Cliquez sur "Ce Firefox" dans le menu de gauche
-   - Cliquez sur "Charger un module complémentaire temporaire"
-   - Sélectionnez le fichier `manifest.json` dans le dossier du projet
+2. In Firefox:
+   - Type `about:debugging` in the address bar
+   - Click "This Firefox" in the left menu
+   - Click "Load Temporary Add-on"
+   - Select the `manifest.json` file in the project folder
 
-## 🚀 Utilisation
+## 🚀 Usage
 
-1. **Sélectionnez votre langue** : Cliquez sur l'icône de l'extension et choisissez votre langue cible parmi les drapeaux disponibles
+1. **Select your language**: Click the extension icon and choose your target language from the available flags
 
-2. **Traduisez une page** : 
-   - Rendez-vous sur un site supporté (ex: mtgtop8.com)
-   - Cliquez sur le bouton "Traduire les cartes sur la page"
-   - Les noms de cartes sont instantanément traduits !
+2. **Translate a page**: 
+   - Visit a supported site (e.g., mtgtop8.com)
+   - Click the "Translate cards on page" button
+   - Card names are instantly translated!
 
-3. **Voir le nom original** : Survolez une carte traduite avec votre souris pour afficher temporairement son nom anglais
+3. **View original name**: Hover over a translated card with your mouse to temporarily display its English name
 
-4. **Ajouter une traduction manuelle** :
-   - Saisissez le nom anglais dans le premier champ
-   - Saisissez la traduction dans le second champ
-   - Cliquez sur "Enregistrer"
+4. **Add a manual translation**:
+   - Enter the English name in the first field
+   - Enter the translation in the second field
+   - Click "Save"
 
-5. **Exporter/Importer votre base** :
-   - **Export** : Téléchargez votre base de traductions au format JSON
-   - **Import** : Glissez-déposez un fichier JSON pour fusionner les traductions
+5. **Export/Import your database**:
+   - **Export**: Download your translation database as JSON
+   - **Import**: Drag and drop a JSON file to merge translations
 
-## 🔧 Architecture technique
+## 🔧 Technical Architecture
 
 ### Stack
 - **Manifest V2** (Firefox)
 - **JavaScript modules (ES6)**
-- **IndexedDB** pour le cache local
-- **API Scryfall** pour les traductions
+- **IndexedDB** for local caching
+- **Scryfall API** for translations
 
-### Structure du projet
+### Project Structure
 ```
 MTG_Translator/
-├── manifest.json           # Configuration de l'extension
+├── manifest.json           # Extension configuration
 ├── popup/
-│   ├── popup.html         # Interface utilisateur
-│   ├── popup.js           # Logique de la popup
+│   ├── popup.html         # User interface
+│   ├── popup.js           # Popup logic
 │   └── popup.css          # Styles
 ├── content/
-│   └── content.js         # Script injecté dans les pages web
+│   └── content.js         # Script injected into web pages
 ├── background/
 │   ├── background.js      # Service worker
-│   ├── translations.js    # API de traduction
-│   ├── scryfall.js        # Appels API Scryfall
-│   ├── db.js              # Gestion IndexedDB
-│   ├── import.html        # Interface d'import
-│   ├── import.js          # Logique d'import
-│   └── import.css         # Styles d'import
+│   ├── translations.js    # Translation API
+│   ├── scryfall.js        # Scryfall API calls
+│   ├── db.js              # IndexedDB management
+│   ├── import.html        # Import interface
+│   ├── import.js          # Import logic
+│   └── import.css         # Import styles
 └── assets/
-    └── selectors.json     # Sélecteurs CSS par site
+    └── selectors.json     # CSS selectors per site
 ```
 
-### Fonctionnement
+### How it works
 
-1. **Détection** : Le content script identifie les éléments contenant des noms de cartes via des sélecteurs CSS spécifiques à chaque site
-2. **Cache local** : Vérifie si la traduction existe dans IndexedDB
-3. **API Scryfall** : Si absente, interroge Scryfall (rate-limited à ~10 req/s)
-4. **Mise en cache** : Stocke la nouvelle traduction localement
-5. **Affichage** : Remplace le texte dans le DOM avec gestion du survol
+1. **Detection**: Content script identifies elements containing card names via site-specific CSS selectors
+2. **Local cache**: Checks if translation exists in IndexedDB
+3. **Scryfall API**: If absent, queries Scryfall (rate-limited to ~10 req/s)
+4. **Caching**: Stores new translation locally
+5. **Display**: Replaces text in DOM with hover management
 
-## 🛠️ Ajouter un nouveau site
+## 🛠️ Adding a New Site
 
-Éditez `assets/selectors.json` et ajoutez les sélecteurs CSS appropriés :
+Edit `assets/selectors.json` and add appropriate CSS selectors:
 
 ```json
 {
-  "nouveau-site.com": [
+  "new-site.com": [
     {
-      "selector": "css-selector-des-cartes",
+      "selector": "css-selector-for-cards",
       "childIndex": 0
     }
   ]
 }
 ```
 
-Pour les sites avec structure composite (comme Moxfield), utilisez le mode composite :
+For sites with composite structure (like Moxfield), use composite mode:
 
 ```json
 {
@@ -117,51 +121,51 @@ Pour les sites avec structure composite (comme Moxfield), utilisez le mode compo
 }
 ```
 
-## 🤝 Contribution
+## 🤝 Contributing
 
-Les contributions sont les bienvenues !
+Contributions are welcome!
 
-### Idées de contribution
-- Ajouter le support de nouveaux sites
-- Améliorer les performances de traduction
-- Ajouter de nouvelles langues
-- Corriger des bugs
-- Améliorer l'interface utilisateur
-- 
-## 🐛 Bugs connus
+### Contribution ideas
+- Add support for new sites
+- Improve translation performance
+- Add new languages
+- Fix bugs
+- Improve user interface
 
-- Les cartes à double face peuvent parfois afficher uniquement la première face
+## 🐛 Known Bugs
 
-## 📄 Licence
+- Double-faced cards may sometimes display only the first face
 
-Ce projet est sous licence MIT - voir le fichier `LICENSE` pour plus de détails.
+## 📄 License
 
-## ⚖️ Mentions légales et avertissement
+This project is licensed under the MIT License - see the `LICENSE` file for details.
 
-**Ce projet n'est pas affilié, sponsorisé, approuvé ou endorsé par Wizards of the Coast.**
+## ⚖️ Legal Notice and Disclaimer
 
-Magic: The Gathering, Magic, les symboles de mana, les noms de cartes, les illustrations de cartes et tous les autres éléments graphiques et textuels associés sont des **marques déposées** et la propriété exclusive de **Wizards of the Coast LLC**, une filiale de Hasbro, Inc.
+**This project is not affiliated with, sponsored by, endorsed by, or approved by Wizards of the Coast.**
 
-© Wizards of the Coast LLC. Tous droits réservés.
+Magic: The Gathering, Magic, mana symbols, card names, card illustrations, and all other associated graphic and textual elements are **trademarks** and exclusive property of **Wizards of the Coast LLC**, a subsidiary of Hasbro, Inc.
 
-### Utilisation des données
+© Wizards of the Coast LLC. All rights reserved.
 
-Cette extension utilise l'**API publique Scryfall** pour récupérer les traductions officielles des cartes. Scryfall n'est pas affilié à Wizards of the Coast. 
+### Data Usage
 
-Les données de cartes (noms, traductions) restent la propriété de Wizards of the Coast et sont utilisées uniquement dans le cadre d'un usage personnel et éducatif.
+This extension uses the **Scryfall public API** to retrieve official card translations. Scryfall is not affiliated with Wizards of the Coast.
 
-### Conditions d'utilisation
+Card data (names, translations) remains the property of Wizards of the Coast and is used solely for personal and educational purposes.
 
-- Cet outil est fourni **gratuitement** et **sans garantie** d'aucune sorte
-- L'utilisation se fait sous votre **propre responsabilité**
-- Respectez les [conditions d'utilisation de Wizards of the Coast](https://company.wizards.com/en/legal/terms)
-- Respectez les [conditions d'utilisation de Scryfall](https://scryfall.com/docs/api)
-- **Aucune utilisation commerciale** des données ou de cet outil n'est autorisée
+### Terms of Use
 
-### Politique de contenu
+- This tool is provided **free of charge** and **without warranty** of any kind
+- Use is at your **own risk**
+- Respect [Wizards of the Coast Terms of Use](https://company.wizards.com/en/legal/terms)
+- Respect [Scryfall Terms of Use](https://scryfall.com/docs/api)
+- **No commercial use** of the data or this tool is permitted
 
-Cette extension ne stocke, ne redistribue et n'affiche **aucune image** de carte. Seuls les noms de cartes (données factuelles) sont traduits.
+### Content Policy
+
+This extension does not store, redistribute, or display **any card images**. Only card names (factual data) are translated.
 
 ---
 
-**Fait avec ❤️ pour la communauté MTG**
+**Made with ❤️ for the MTG community**
