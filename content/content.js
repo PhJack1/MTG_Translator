@@ -62,6 +62,11 @@ async function selectionnerElementsATraduire() {
   return elements;
 }
 
+function normaliserNomCarte(nom) {
+  // Normalise les séparateurs des cartes doubles/split
+  // "Fire / Ice" ou "Fire/Ice" → "Fire // Ice"
+  return nom.replace(/\s*\/\s*/g, ' // ');
+}
 
 async function traduireEtRemplacer(langueCible) {
   const items = await selectionnerElementsATraduire();
@@ -79,6 +84,7 @@ async function traduireEtRemplacer(langueCible) {
       } else {
         const parts = [...element.querySelectorAll(item.childSelector)];
         original = parts.map(s => s.textContent.trim()).join(" ");
+        original = normaliserNomCarte(original); 
         element.setAttribute("data-original-name", original);
       }
     } else {
@@ -88,6 +94,7 @@ async function traduireEtRemplacer(langueCible) {
         original = element.getAttribute("data-original-name");
       } else {
         original = element.textContent.trim();
+        original = normaliserNomCarte(original); 
         element.setAttribute("data-original-name", original);
       }
     }

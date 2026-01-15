@@ -11,33 +11,79 @@
     },
     {
       "selector": "tr.hover_tr",
-      "childIndex": 0  
+      "childIndex": 0
     },
     {
       "selector": "tr.chosen_tr",
-      "childIndex": 0 
+      "childIndex": 0
+    },
+    {
+      "selector": "td.S16"
     }
   ],
-    "mtgdecks.net": [
+  "mtgdecks.net": [
     {
       "selector": "td.number",
       "childIndex": 1
+    },
+    {
+      "selector": "h1[itemprop='name']"
     }
   ],
-    "mtggoldfish.com": [
+  "mtggoldfish.com": [
     {
       "selector": "span.card_id.card_name > a[data-card-id]"
+    },
+    {
+      "selector": "div.price-card-name-header-name"
+    },
+    {
+      "selector": "h3.gatherer-name"
     }
   ],
   "moxfield.com": [
-  {
-    "selector": "a.table-deck-row-link.text-body",
-    "mode": "composite",
-    "childSelector": "span.underline"
-  }
-],
-
-  "exemple.com": [ 
+    {
+      "selector": "a.table-deck-row-link.text-body",
+      "mode": "composite",
+      "childSelector": "span.underline"
+    },
+    {
+      "selector": "a[href^='/cards/']"
+    },
+    {
+      "selector": "h1.mb-0[lang='en']",
+      "childIndex": 0
+    }
+  ],
+  "deckstats.net": [
+    {
+      "selector": "a.cardlink.cardlink_delegated"
+    }
+  ],
+  "archidekt.com": [
+    {
+      "selector": "span.textViewCard_cardName__Kvoh9",
+      "childIndex": 0
+    },
+    {
+      "selector": "span.spreadsheetCard_cardNameContainer__7vk1C",
+      "childIndex": 0
+    }
+  ],
+  "tappedout.net": [
+    {
+      "selector": "a.card-link.card-hover"
+    },
+    {
+      "selector": "a.card-link.foil-card.card-hover"
+    }
+  ],
+  "edhrec.com": [
+    {
+         "selector": "span.d-none.d-md-inline a[href^='/cards/']"
+    }
+  ],
+  "exemple.com": [
     {
       "selector": "span.translatable",
       "childIndex": 0
