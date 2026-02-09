@@ -10,11 +10,7 @@ Firefox瀏覽器擴充功能，可在最受歡迎的牌表網站上自動翻譯�
 
 - **即時翻譯**：即時將MTG卡牌名稱翻譯成您選擇的語言
 - **多語言支援**：支援10種語言（FR、ES、DE、IT、PT、JA、KO、RU、ZH、ZH-TW）
-- **相容網站**：
-  - MTGTop8
-  - MTGGoldfish
-  - Moxfield
-  - MTGDecks.net
+- **相容網站**：MTGTop8、MTGGoldfish、Moxfield、MTGDecks.net、DeckStats、Archidekt、TappedOut、EDHREC等（完整列表見 `assets/selectors.json`）
 - **智慧本地快取**：使用IndexedDB儲存翻譯並減少API呼叫
 - **懸停模式**：將滑鼠懸停在已翻譯的卡牌上可顯示英文原名
 - **匯入/匯出**：儲存和分享您的自訂翻譯資料庫
@@ -98,7 +94,16 @@ MTG_Translator/
 
 ## 🛠️ 新增新網站
 
-編輯 `assets/selectors.json` 並新增適當的CSS選擇器：
+該擴充功能透過在 `assets/selectors.json` 中新增CSS選擇器來支援任何網站。此檔案將網站網域對應至包含卡牌名稱的HTML元素。
+
+### 選擇器設定
+
+每個網站項目需要：
+- **selector**：針對包含卡牌名稱的元素的CSS選擇器
+- **childIndex**（可選）：如果名稱在子元素中，指定哪個子元素（0 = 第一個）
+- **mode**（可選）：對於具有父選擇器和子選擇器的複雜結構，使用 `"composite"`
+
+### 基本範例
 
 ```json
 {
@@ -111,15 +116,31 @@ MTG_Translator/
 }
 ```
 
-對於具有複合結構的網站（如Moxfield），使用複合模式：
+### 複合範例（如Moxfield）
+
+對於具有嵌套結構的網站：
 
 ```json
 {
-  "selector": "父選擇器",
-  "mode": "composite",
-  "childSelector": "子選擇器"
+  "moxfield.com": [
+    {
+      "selector": "a.table-deck-row-link.text-body",
+      "mode": "composite",
+      "childSelector": "span.underline"
+    }
+  ]
 }
 ```
+
+### 新增網站的步驟
+
+1. 開啟瀏覽器開發者工具 (F12)
+2. 檢查卡牌名稱元素以找到其CSS選擇器
+3. 將項目新增至 `assets/selectors.json`
+4. 重新載入擴充功能並造訪該網站進行測試
+5. 如需要調整選擇器
+
+請參閱 `assets/selectors.json` 了解目前支援的網站及其設定。
 
 ## 🤝 貢獻
 

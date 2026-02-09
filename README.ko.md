@@ -10,11 +10,7 @@
 
 - **실시간 번역**: MTG 카드 이름을 선택한 언어로 즉시 번역
 - **다국어 지원**: 10개 언어 지원 (FR, ES, DE, IT, PT, JA, KO, RU, ZH, ZH-TW)
-- **지원 사이트**:
-  - MTGTop8
-  - MTGGoldfish
-  - Moxfield
-  - MTGDecks.net
+- **지원 사이트**: MTGTop8, MTGGoldfish, Moxfield, MTGDecks.net, DeckStats, Archidekt, TappedOut, EDHREC 등 (전체 목록은 `assets/selectors.json` 참조)
 - **스마트 로컬 캐시**: IndexedDB를 사용하여 번역을 저장하고 API 호출 감소
 - **호버 모드**: 번역된 카드에 마우스를 올리면 영어 원본 이름 표시
 - **가져오기/내보내기**: 맞춤 번역 데이터베이스 저장 및 공유
@@ -98,7 +94,16 @@ MTG_Translator/
 
 ## 🛠️ 새 사이트 추가
 
-`assets/selectors.json`을 편집하고 적절한 CSS 선택자 추가:
+`assets/selectors.json`에 CSS 선택자를 추가하여 확장 프로그램이 모든 웹사이트를 지원하도록 할 수 있습니다. 이 파일은 웹사이트 도메인을 카드 이름을 포함하는 HTML 요소에 매핑합니다.
+
+### 선택자 구성
+
+각 사이트 항목에는 다음이 필요합니다:
+- **selector**: 카드 이름을 포함하는 요소를 대상으로 하는 CSS 선택자
+- **childIndex** (선택사항): 이름이 자식 요소에 있는 경우, 어느 자식인지 지정 (0 = 첫 번째)
+- **mode** (선택사항): 부모 및 자식 선택자가 있는 복잡한 구조의 경우 `"composite"` 사용
+
+### 기본 예시
 
 ```json
 {
@@ -111,15 +116,31 @@ MTG_Translator/
 }
 ```
 
-복합 구조의 사이트(Moxfield 등)의 경우 복합 모드 사용:
+### 복합 예시 (Moxfield 같은)
+
+중첩된 구조가 있는 사이트의 경우:
 
 ```json
 {
-  "selector": "부모-선택자",
-  "mode": "composite",
-  "childSelector": "자식-선택자"
+  "moxfield.com": [
+    {
+      "selector": "a.table-deck-row-link.text-body",
+      "mode": "composite",
+      "childSelector": "span.underline"
+    }
+  ]
 }
 ```
+
+### 사이트 추가 단계
+
+1. 브라우저의 개발자 도구 (F12) 열기
+2. 카드 이름 요소를 검사하여 CSS 선택자 찾기
+3. 선택자와 함께 `assets/selectors.json`에 항목 추가
+4. 확장 프로그램을 다시 로드하고 사이트 방문하여 테스트
+5. 필요시 선택자 조정
+
+현재 지원되는 사이트 및 구성은 `assets/selectors.json`을 참조하세요.
 
 ## 🤝 기여
 

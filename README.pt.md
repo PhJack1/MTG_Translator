@@ -10,11 +10,7 @@ Extensão de navegador Firefox para traduzir automaticamente nomes de cartas de 
 
 - **Tradução em tempo real**: Traduz instantaneamente nomes de cartas MTG para o idioma escolhido
 - **Suporte multilíngue**: 10 idiomas disponíveis (FR, ES, DE, IT, PT, JA, KO, RU, ZH, ZH-TW)
-- **Sites compatíveis**:
-  - MTGTop8
-  - MTGGoldfish
-  - Moxfield
-  - MTGDecks.net
+- **Sites compatíveis**: MTGTop8, MTGGoldfish, Moxfield, MTGDecks.net, DeckStats, Archidekt, TappedOut, EDHREC e muito mais (ver `assets/selectors.json` para a lista completa)
 - **Cache local inteligente**: Usa IndexedDB para armazenar traduções e reduzir chamadas de API
 - **Modo hover**: Exiba o nome original em inglês ao passar o mouse sobre uma carta traduzida
 - **Importar/Exportar**: Salve e compartilhe seu banco de dados de traduções personalizado
@@ -98,7 +94,16 @@ MTG_Translator/
 
 ## 🛠️ Adicionar um Novo Site
 
-Edite `assets/selectors.json` e adicione os seletores CSS apropriados:
+A extensão suporta qualquer site adicionando seletores CSS a `assets/selectors.json`. Este arquivo mapeia domínios da web para os elementos HTML que contêm nomes de cartas.
+
+### Configuração de Seletores
+
+Cada entrada de site requer:
+- **selector**: Seletor CSS que aponta para o elemento contendo o nome da carta
+- **childIndex** (opcional): Se o nome está em um elemento filho, especificar qual (0 = primeiro)
+- **mode** (opcional): Usar `"composite"` para estruturas complexas com seletores pai e filho
+
+### Exemplo Básico
 
 ```json
 {
@@ -111,15 +116,31 @@ Edite `assets/selectors.json` e adicione os seletores CSS apropriados:
 }
 ```
 
-Para sites com estrutura composta (como Moxfield), use o modo composto:
+### Exemplo Composto (como Moxfield)
+
+Para sites com estruturas aninhadas:
 
 ```json
 {
-  "selector": "seletor-pai",
-  "mode": "composite",
-  "childSelector": "seletor-filho"
+  "moxfield.com": [
+    {
+      "selector": "a.table-deck-row-link.text-body",
+      "mode": "composite",
+      "childSelector": "span.underline"
+    }
+  ]
 }
 ```
+
+### Passos para Adicionar um Site
+
+1. Abra as Ferramentas de Desenvolvedor do navegador (F12)
+2. Inspecione um elemento de nome de carta para encontrar seu seletor CSS
+3. Adicione uma entrada a `assets/selectors.json` com o seletor
+4. Teste recarregando a extensão e visitando o site
+5. Refine o seletor se necessário
+
+Veja `assets/selectors.json` para sites atualmente suportados e suas configurações.
 
 ## 🤝 Contribuir
 

@@ -10,11 +10,7 @@ Firefox-Browser-Erweiterung zur automatischen Übersetzung von Magic: The Gather
 
 - **Echtzeit-Übersetzung**: Übersetzt MTG-Kartennamen sofort in Ihre gewählte Sprache
 - **Mehrsprachige Unterstützung**: 10 Sprachen verfügbar (FR, ES, DE, IT, PT, JA, KO, RU, ZH, ZH-TW)
-- **Kompatible Websites**:
-  - MTGTop8
-  - MTGGoldfish
-  - Moxfield
-  - MTGDecks.net
+- **Kompatible Websites**: MTGTop8, MTGGoldfish, Moxfield, MTGDecks.net, DeckStats, Archidekt, TappedOut, EDHREC und mehr (siehe `assets/selectors.json` für vollständige Liste)
 - **Intelligenter lokaler Cache**: Verwendet IndexedDB zum Speichern von Übersetzungen und Reduzieren von API-Aufrufen
 - **Hover-Modus**: Zeigen Sie den englischen Originalnamen an, indem Sie über eine übersetzte Karte fahren
 - **Import/Export**: Speichern und teilen Sie Ihre benutzerdefinierte Übersetzungsdatenbank
@@ -98,7 +94,16 @@ MTG_Translator/
 
 ## 🛠️ Neue Website hinzufügen
 
-Bearbeiten Sie `assets/selectors.json` und fügen Sie geeignete CSS-Selektoren hinzu:
+Die Erweiterung unterstützt jede Website, indem CSS-Selektoren zu `assets/selectors.json` hinzugefügt werden. Diese Datei ordnet Web-Domänen den HTML-Elementen zu, die Kartennamen enthalten.
+
+### Selektoren-Konfiguration
+
+Jeder Website-Eintrag erfordert:
+- **selector**: CSS-Selektor für das Element, das den Kartennamen enthält
+- **childIndex** (optional): Wenn der Name in einem untergeordneten Element ist, angeben welches (0 = erstes)
+- **mode** (optional): `"composite"` für komplexe Strukturen mit Parent- und Child-Selektoren verwenden
+
+### Einfaches Beispiel
 
 ```json
 {
@@ -111,15 +116,31 @@ Bearbeiten Sie `assets/selectors.json` und fügen Sie geeignete CSS-Selektoren h
 }
 ```
 
-Für Websites mit zusammengesetzter Struktur (wie Moxfield) verwenden Sie den zusammengesetzten Modus:
+### Composite-Beispiel (wie Moxfield)
+
+Für Websites mit verschachtelten Strukturen:
 
 ```json
 {
-  "selector": "eltern-selektor",
-  "mode": "composite",
-  "childSelector": "kind-selektor"
+  "moxfield.com": [
+    {
+      "selector": "a.table-deck-row-link.text-body",
+      "mode": "composite",
+      "childSelector": "span.underline"
+    }
+  ]
 }
 ```
+
+### Schritte zum Hinzufügen einer Website
+
+1. Öffnen Sie die Browser-Entwicklertools (F12)
+2. Inspizieren Sie ein Kartennamen-Element, um seinen CSS-Selektor zu finden
+3. Fügen Sie einen Eintrag zu `assets/selectors.json` mit dem Selektor hinzu
+4. Testen Sie durch Neuladen der Erweiterung und Besuchen der Website
+5. Verfeinern Sie den Selektor bei Bedarf
+
+Siehe `assets/selectors.json` für derzeit unterstützte Websites und ihre Konfigurationen.
 
 ## 🤝 Mitwirken
 
