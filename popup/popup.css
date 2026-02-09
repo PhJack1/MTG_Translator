@@ -1,88 +1,108 @@
+* {
+  box-sizing: border-box;
+}
+
 .container {
   width: 300px;
   padding: 10px;
   font-family: Arial, sans-serif;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
   font-size: 1em;
-  margin-bottom: 10px;
+  margin: 0 0 6px 0;
   text-align: center;
-  color: #333;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .flags {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 4px;
 }
 
 .flag-row {
   display: flex;
   justify-content: space-between;
-  width: 100%;
-  margin-bottom: 5px;
 }
 
 .flag {
-  font-size: 2.5em;
-  cursor: pointer;
+  font-size: 2.2em;
   opacity: 0.5;
-  margin: 2px;
-  transition: opacity 0.3s ease;
+  cursor: pointer;
 }
 
 .flag.selected {
   opacity: 1;
 }
 
-textarea {
-  width: calc(100% - 16px);
-  height: 40px;
-  margin: 0 auto 10px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  padding: 8px;
-  resize: none;
-  display: block;
-}
-
-.buttons-container {
-  display: flex;
-  flex-wrap: wrap; /* Permet aux boutons de passer à la ligne */
-  gap: 10px; /* Espace entre les boutons */
-  align-items: stretch; /* Étire les boutons pour qu'ils aient la même hauteur */
-}
-
-.buttons-container button {
-  flex: 1 1 auto; /* Permet aux boutons de s'ajuster à la largeur disponible */
-  min-width: 150px; /* Largeur minimale des boutons */
-  white-space: normal; /* Permet au texte de passer à la ligne */
-  height: auto; /* Hauteur automatique pour s'ajuster au contenu */
-  min-height: 40px; /* Hauteur minimale pour les boutons */
-}
-
-button {
-  padding: 8px 15px;
-  cursor: pointer;
+/* Boutons standard */
+button:not(.nav-arrow) {
+  width: 100%;
+  height: 36px;
+  margin-bottom: 4px;
   border: none;
   border-radius: 5px;
   font-weight: bold;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 }
 
-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+/* Zone centrale : hauteur FIXE */
+.pages {
+  height: 112px; /* clé anti-resize */
+  overflow: hidden;
 }
 
-button:active {
-  transform: translateY(0);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+/* Textareas : VRAIE 1 ligne */
+textarea {
+  width: 100%;
+  height: 26px;
+  padding: 4px 6px;
+  margin-bottom: 4px;
+  resize: none;
+  overflow: hidden;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 12px;
+}
+
+/* Footer navigation */
+.footer-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.nav-arrow {
+  width: 22px;
+  height: 22px;
+  font-size: 13px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.nav-arrow:disabled {
+  opacity: 0.2;
+  cursor: default;
+}
+
+.about-container {
+  flex: 1;
+  text-align: center;
+}
+
+.about-container a {
+  font-size: 12px;
+  color: #666;
+  text-decoration: none;
 }

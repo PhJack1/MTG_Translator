@@ -1,0 +1,5 @@
+blocage entre deux appuis traduction
+toastify pour retour user : en particulier traductions en cours, traduction terminée
+lien vers infos sur github
+option auto-trad
+importation db en json depuis le github ? oblige à mettre à jour la db à chaque nouveau set mais c'est pas non plus le bout du monde 

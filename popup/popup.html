@@ -7,37 +7,111 @@
 </head>
 <body>
   <div class="container">
-    <h1 data-key="title" data-translations='{"es":"Traductor de Cartas MTG","fr":"Traducteur de Cartes MTG","de":"MTG Karten Übersetzer","it":"Traduttore di Carte MTG","pt":"Tradutor de Cartas MTG","ja":"MTGカード翻訳","ko":"MTG 카드 번역기","ru":"Переводчик карт MTG","zh":"MTG卡牌翻译","zh-TW":"MTG卡牌翻譯"}'>MTG Cards Translator</h1>
-    
-    <div class="flags">
-      <div class="flag-row">
-        <span class="flag" id="flag-es" data-lang="es">🇪🇸</span>
-        <span class="flag" id="flag-fr" data-lang="fr">🇫🇷</span>
-        <span class="flag" id="flag-de" data-lang="de">🇩🇪</span>
-        <span class="flag" id="flag-it" data-lang="it">🇮🇹</span>
-        <span class="flag" id="flag-pt" data-lang="pt">🇵🇹</span>
+
+    <h1
+      data-key="title"
+      data-translations='{"es":"Traductor de Cartas MTG","fr":"Traducteur de Cartes MTG","de":"MTG Karten Übersetzer","it":"Traduttore di Carte MTG","pt":"Tradutor de Cartas MTG","ja":"MTGカード翻訳","ko":"MTG 카드 번역기","ru":"Переводчик карт MTG","zh":"MTG卡牌翻译","zh-TW":"MTG卡牌翻譯"}'
+    >
+      MTG Cards Translator
+    </h1>
+
+    <!-- ZONE FIXE -->
+    <div class="fixed-top">
+
+      <div class="flags">
+        <div class="flag-row">
+          <span class="flag" id="flag-es" data-lang="es">🇪🇸</span>
+          <span class="flag" id="flag-fr" data-lang="fr">🇫🇷</span>
+          <span class="flag" id="flag-de" data-lang="de">🇩🇪</span>
+          <span class="flag" id="flag-it" data-lang="it">🇮🇹</span>
+          <span class="flag" id="flag-pt" data-lang="pt">🇵🇹</span>
+        </div>
+        <div class="flag-row">
+          <span class="flag" id="flag-ja" data-lang="ja">🇯🇵</span>
+          <span class="flag" id="flag-ko" data-lang="ko">🇰🇷</span>
+          <span class="flag" id="flag-ru" data-lang="ru">🇷🇺</span>
+          <span class="flag" id="flag-zh" data-lang="zh">🇨🇳</span>
+          <span class="flag" id="flag-zh-tw" data-lang="zh-TW">🇹🇼</span>
+        </div>
       </div>
-      <div class="flag-row">
-        <span class="flag" id="flag-ja" data-lang="ja">🇯🇵</span>
-        <span class="flag" id="flag-ko" data-lang="ko">🇰🇷</span>
-        <span class="flag" id="flag-ru" data-lang="ru">🇷🇺</span>
-        <span class="flag" id="flag-zh" data-lang="zh">🇨🇳</span>
-        <span class="flag" id="flag-zh-tw" data-lang="zh-TW">🇹🇼</span>
+
+      <button
+        id="translate-button"
+        data-key="btn-translate"
+        data-translations='{"es":"Traducir cartas en la página","fr":"Traduire les cartes sur la page","de":"Karten auf der Seite übersetzen","it":"Traduci le carte nella pagina","pt":"Traduzir cartas na página","ja":"ページ上のカードを翻訳","ko":"페이지의 카드 번역","ru":"Перевести карты на странице","zh":"翻译页面上的卡牌","zh-TW":"翻譯頁面上的卡牌"}'
+      >
+        Traduire les cartes sur la page
+      </button>
+
+    </div>
+
+    <!-- ZONE CENTRALE (TAILLE FIXE) -->
+    <div class="pages">
+
+      <!-- PAGE 1 -->
+      <div class="page active">
+        <button
+          id="import-button"
+          data-key="btn-import"
+          data-translations='{"es":"Importar","fr":"Importer","de":"Importieren","it":"Importa","pt":"Importar","ja":"インポート","ko":"가져오기","ru":"Импорт","zh":"导入","zh-TW":"導入"}'
+        >
+          Importer
+        </button>
+
+        <button
+          id="export-button"
+          data-key="btn-export"
+          data-translations='{"es":"Exportar","fr":"Exporter","de":"Exportieren","it":"Esporta","pt":"Exportar","ja":"エクスポート","ko":"내보내기","ru":"Экспорт","zh":"导出","zh-TW":"導出"}'
+        >
+          Exporter
+        </button>
       </div>
+
+      <!-- PAGE 2 -->
+      <div class="page">
+        <textarea
+          id="text-inputEn"
+          data-key="input-en"
+          data-translations='{"es":"Escriba el nombre de la carta en inglés...","fr":"Tapez un nom de carte en anglais ...","de":"Geben Sie den Kartennamen auf Englisch ein...","it":"Digita il nome della carta in inglese...","pt":"Digite o nome da carta em inglês...","ja":"英語でカード名を入力してください...","ko":"영어로 카드 이름을 입력하세요...","ru":"Введите название карты на английском...","zh":"输入英文卡牌名称...","zh-TW":"輸入英文卡牌名稱..."}'
+        ></textarea>
+
+        <textarea
+          id="text-inputTrad"
+          data-key="input-trad"
+          data-translations='{"es":"... y aquí su traducción en el idioma seleccionado, luego haga clic en guardar","fr":"... et ici sa traduction dans la langue sélectionnée puis cliquez sur enregistrer","de":"... und hier die Übersetzung in der ausgewählten Sprache, dann auf Speichern klicken","it":"... e qui la sua traduzione nella lingua selezionata, quindi fai clic su salva","pt":"... e aqui sua tradução no idioma selecionado, depois clique em salvar","ja":"...そしてここに選択した言語の翻訳を入力して、保存をクリックしてください","ko":"...그리고 여기에서 선택한 언어로 번역한 후 저장을 클릭하세요","ru":"...и здесь его перевод на выбранный язык, затем нажмите сохранить","zh":"...在此输入所选语言的翻译，然后点击保存","zh-TW":"...在此輸入所選語言的翻譯，然後點擊保存"}'
+        ></textarea>
+
+        <button
+          id="saveDb-button"
+          data-key="btn-save"
+          data-translations='{"es":"Guardar","fr":"Enregistrer","de":"Speichern","it":"Salva","pt":"Salvar","ja":"保存","ko":"저장","ru":"Сохранить","zh":"保存","zh-TW":"保存"}'
+        >
+          Enregistrer
+        </button>
+      </div>
+
     </div>
-    
-    <textarea id="text-inputEn" placeholder="Tapez un nom de carte en anglais ..." data-key="input-en" data-translations='{"es":"Escriba el nombre de la carta en inglés...","fr":"Tapez un nom de carte en anglais ...","de":"Geben Sie den Kartennamen auf Englisch ein...","it":"Digita il nome della carta in inglese...","pt":"Digite o nome da carta em inglês...","ja":"英語でカード名を入力してください...","ko":"영어로 카드 이름을 입력하세요...","ru":"Введите название карты на английском...","zh":"输入英文卡牌名称...","zh-TW":"輸入英文卡牌名稱..."}'></textarea>
-    
-    <textarea id="text-inputTrad" placeholder="... et ici sa traduction dans la langue sélectionnée puis cliquez sur enregistrer" data-key="input-trad" data-translations='{"es":"... y aquí su traducción en el idioma seleccionado, luego haga clic en guardar","fr":"... et ici sa traduction dans la langue sélectionnée puis cliquez sur enregistrer","de":"... und hier die Übersetzung in der ausgewählten Sprache, dann auf Speichern klicken","it":"... e qui la sua traduzione nella lingua selezionata, quindi fai clic su salva","pt":"... e aqui sua tradução no idioma selecionado, depois clique em salvar","ja":"...そしてここに選択した言語の翻訳を入力して、保存をクリックしてください","ko":"...그리고 여기에서 선택한 언어로 번역한 후 저장을 클릭하세요","ru":"...и здесь его перевод на выбранный язык, затем нажмите сохранить","zh":"...在此输入所选语言的翻译，然后点击保存","zh-TW":"...在此輸入所選語言的翻譯，然後點擊保存"}'></textarea>
-    
-    <div class="buttons-container">
-      <button id="translate-button" data-key="btn-translate" data-translations='{"es":"Traducir cartas en la página","fr":"Traduire les cartes sur la page","de":"Karten auf der Seite übersetzen","it":"Traduci le carte nella pagina","pt":"Traduzir cartas na página","ja":"ページ上のカードを翻訳","ko":"페이지의 카드 번역","ru":"Перевести карты на странице","zh":"翻译页面上的卡牌","zh-TW":"翻譯頁面上的卡牌"}'>Traduire les cartes sur la page</button>
-      <button id="saveDb-button" data-key="btn-save" data-translations='{"es":"Guardar","fr":"Enregistrer","de":"Speichern","it":"Salva","pt":"Salvar","ja":"保存","ko":"저장","ru":"Сохранить","zh":"保存","zh-TW":"保存"}'>Enregistrer</button>
-      <button id="import-button" data-key="btn-import" data-translations='{"es":"Importar","fr":"Importer","de":"Importieren","it":"Importa","pt":"Importar","ja":"インポート","ko":"가져오기","ru":"Импорт","zh":"导入","zh-TW":"導入"}'>Importer</button>
-      <button id="export-button" data-key="btn-export" data-translations='{"es":"Exportar","fr":"Exporter","de":"Exportieren","it":"Esporta","pt":"Exportar","ja":"エクスポート","ko":"내보내기","ru":"Экспорт","zh":"导出","zh-TW":"導出"}'>Exporter</button>
+
+    <!-- FOOTER -->
+    <div class="footer-nav">
+      <button class="nav-arrow" id="nav-prev">◀</button>
+
+      <div class="about-container">
+        <a
+          href="https://github.com/PhJack1/MTG_Translator/?tab=readme-ov-file#readme"
+          target="_blank"
+          data-key="about-link"
+          data-translations='{"es":"Acerca de","fr":"À propos","de":"Über","it":"Informazioni","pt":"Sobre","ja":"この拡張について","ko":"정보","ru":"О расширении","zh":"关于","zh-TW":"關於"}'
+        >
+          À propos
+        </a>
+      </div>
+
+      <button class="nav-arrow" id="nav-next">▶</button>
     </div>
+
   </div>
-  
+
   <script src="popup.js"></script>
 </body>
 </html>

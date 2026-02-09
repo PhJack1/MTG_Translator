@@ -127,5 +127,36 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+
+  let currentPage = 0;
+const pages = document.querySelectorAll(".page");
+const prevBtn = document.getElementById("nav-prev");
+const nextBtn = document.getElementById("nav-next");
+
+function updatePages() {
+  pages.forEach((page, index) => {
+    page.classList.toggle("active", index === currentPage);
+  });
+
+  prevBtn.disabled = currentPage === 0;
+  nextBtn.disabled = currentPage === pages.length - 1;
+}
+
+prevBtn.addEventListener("click", () => {
+  if (currentPage > 0) {
+    currentPage--;
+    updatePages();
+  }
+});
+
+nextBtn.addEventListener("click", () => {
+  if (currentPage < pages.length - 1) {
+    currentPage++;
+    updatePages();
+  }
+});
+
+updatePages();
+
   // FIN DE LA POPUP (on domload etc)
 });
