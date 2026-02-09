@@ -1,5 +1,8 @@
-blocage entre deux appuis traduction
-toastify pour retour user : en particulier traductions en cours, traduction terminée
-lien vers infos sur github
-option auto-trad
+facile page import dans la langue du drapeau selectionné
+
+
+toastify pour retour user : en particulier traductions en cours, traduction terminée et associer blocage ux pendant une traduction pour éviter plusieurs clics 
+
+option auto-trad ? case à cocher mais nécessite de listen tout le temps ? 
+
 importation db en json depuis le github ? oblige à mettre à jour la db à chaque nouveau set mais c'est pas non plus le bout du monde 
