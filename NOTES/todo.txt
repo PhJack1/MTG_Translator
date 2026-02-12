@@ -1,7 +1,6 @@
-facile page import dans la langue du drapeau selectionné
+Blocage UX tant que traduction en cours (évite multiclics et erreurs)
 
-
-toastify pour retour user : en particulier traductions en cours, traduction terminée et associer blocage ux pendant une traduction pour éviter plusieurs clics 
+toastify pour retour user : en particulier traductions en cours, traduction terminée etc
 
 option auto-trad ? case à cocher mais nécessite de listen tout le temps ? 
 

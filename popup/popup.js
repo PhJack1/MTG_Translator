@@ -124,11 +124,28 @@ document.addEventListener('DOMContentLoaded', () => {
       width: 480,
       height: 300,
       focused: true
+    }, (window) => {
+      if (window && window.tabs && window.tabs[0]) {
+        setTimeout(() => {
+          browser.tabs.sendMessage(window.tabs[0].id, { 
+            action: 'setLanguage', 
+            lang: selectedLanguage 
+          }).catch(err => {
+            console.log('Message delayed or failed, retrying:', err);
+            setTimeout(() => {
+              browser.tabs.sendMessage(window.tabs[0].id, { 
+                action: 'setLanguage', 
+                lang: selectedLanguage 
+              }).catch(console.error);
+            }, 500);
+          });
+        }, 100);
+      }
     });
   });
 
 
-  let currentPage = 0;
+let currentPage = 0;
 const pages = document.querySelectorAll(".page");
 const prevBtn = document.getElementById("nav-prev");
 const nextBtn = document.getElementById("nav-next");

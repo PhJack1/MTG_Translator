@@ -2,14 +2,23 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Importer JSON</title>
+<title
+  data-key="title-import"
+  data-translations='{"es":"Importar JSON","fr":"Importer JSON","de":"JSON importieren","it":"Importa JSON","pt":"Importar JSON","ja":"JSONをインポート","ko":"JSON 가져오기","ru":"Импорт JSON","zh":"导入 JSON","zh-TW":"導入 JSON"}'
+>Importer JSON</title>
 <link rel="stylesheet" href="./import.css">
 </head>
 <body>
 
 <div id="dropzone">
-  <p>Glissez votre fichier JSON ici</p>
-  <button id="pick">ou cliquez pour choisir un fichier</button>
+  <p
+    data-key="dropzone-main-text"
+    data-translations='{"es":"Arrastra tu archivo JSON aquí","fr":"Glissez votre fichier JSON ici","de":"Ziehen Sie Ihre JSON-Datei hierher","it":"Trascina il tuo file JSON qui","pt":"Arraste seu arquivo JSON aqui","ja":"JSONファイルをここにドラッグしてください","ko":"JSON 파일을 여기로 드래그하세요","ru":"Перетащите ваш JSON файл сюда","zh":"将JSON文件拖到此处","zh-TW":"將JSON檔案拖到此處"}'
+  >Glissez votre fichier JSON ici</p>
+  <button id="pick"
+    data-key="btn-pick"
+    data-translations='{"es":"o haz clic para elegir un archivo","fr":"ou cliquez pour choisir un fichier","de":"oder klicken Sie, um eine Datei auszuwählen","it":"o fai clic per scegliere un file","pt":"ou clique para escolher um arquivo","ja":"またはクリックしてファイルを選択","ko":"또는 클릭하여 파일 선택","ru":"или нажмите для выбора файla","zh":"或点击选择文件","zh-TW":"或點擊選擇檔案"}'
+  >ou cliquez pour choisir un fichier</button>
 </div>
 
 <input type="file" id="fileInput" accept=".json" hidden>
