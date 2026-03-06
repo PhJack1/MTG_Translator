@@ -54,6 +54,9 @@ cd MTG_Translator
    - **Exportar**: Baixe seu banco de dados de traduções em formato JSON
    - **Importar**: Arraste e solte um arquivo JSON para mesclar traduções
 
+   ### 🤖 Tradução Automática
+A extensão agora pode traduzir automaticamente as cartas MTG sem intervenção manual. Simplesmente marque a caixa "Tradução automática" no popup e selecione seu idioma de destino. A tradução ocorrerá automaticamente quando cada página compatível for carregada e também detectará mudanças dinâmicas do DOM (sites como Moxfield com edição ao vivo).
+
 ## 🔧 Arquitetura Técnica
 
 ### Stack
