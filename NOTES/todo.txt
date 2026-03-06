@@ -1,5 +1,11 @@
 en cours avec claude : import/export de selectors custom
 
-Blocage UX tant que traduction en cours (évite multiclics et erreurs) avec toastify ?
+Blocage UX tant que traduction en cours (évite multiclics et erreurs) avec des toasts ?
+
+une fois ces deux la : publication sur mozzila pour début diffusion ? 
 
 readme : explication dbextract python (conseils pip et pyenv)
+
+conversion Chrome/polyfill explication
+
+conversion/dev vers ANDROID !!!
