@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const flags = document.querySelectorAll('.flag');
   const translateButton = document.getElementById('translate-button');
+  const autoTranslateToggle = document.getElementById('autoTranslateToggle');
   const textEn = document.getElementById('text-inputEn');
   const textTrad = document.getElementById('text-inputTrad');
   const saveDbButton = document.getElementById('saveDb-button');
@@ -47,6 +48,33 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
     applyTranslations(selectedLanguage);
+  });
+
+  // ✨ NOUVELLE FONCTIONNALITÉ : Restaurer l'état de l'auto-traduction
+  browser.storage.local.get('autoTranslate').then(result => {
+    autoTranslateToggle.checked = result.autoTranslate || false;
+    console.log('Auto-translate restored:', autoTranslateToggle.checked);
+  });
+
+  // ✨ NOUVELLE FONCTIONNALITÉ : Gestion du changement de la case à cocher
+  autoTranslateToggle.addEventListener('change', (e) => {
+    const isEnabled = e.target.checked;
+    browser.storage.local.set({ autoTranslate: isEnabled });
+    
+    console.log('Auto-translate toggled:', isEnabled);
+    
+    // Informer le content script du changement
+    browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]) {
+        browser.tabs.sendMessage(tabs[0].id, {
+          action: 'autoTranslateToggled',
+          enabled: isEnabled,
+          lang: selectedLanguage
+        }).catch(err => {
+          console.log('Content script not ready or error:', err);
+        });
+      }
+    });
   });
 
   // Gestion du clic sur les drapeaux
@@ -144,36 +172,29 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // 🔄 CAROUSEL INFINI AVEC MODULO
+  let currentPage = 0;
+  const pages = document.querySelectorAll(".page");
+  const prevBtn = document.getElementById("nav-prev");
+  const nextBtn = document.getElementById("nav-next");
 
-let currentPage = 0;
-const pages = document.querySelectorAll(".page");
-const prevBtn = document.getElementById("nav-prev");
-const nextBtn = document.getElementById("nav-next");
+  function updatePages() {
+    pages.forEach((page, index) => {
+      page.classList.toggle("active", index === currentPage);
+    });
+  }
 
-function updatePages() {
-  pages.forEach((page, index) => {
-    page.classList.toggle("active", index === currentPage);
+  prevBtn.addEventListener("click", () => {
+    currentPage = (currentPage - 1 + pages.length) % pages.length;
+    updatePages();
   });
 
-  prevBtn.disabled = currentPage === 0;
-  nextBtn.disabled = currentPage === pages.length - 1;
-}
-
-prevBtn.addEventListener("click", () => {
-  if (currentPage > 0) {
-    currentPage--;
+  nextBtn.addEventListener("click", () => {
+    currentPage = (currentPage + 1) % pages.length;
     updatePages();
-  }
-});
+  });
 
-nextBtn.addEventListener("click", () => {
-  if (currentPage < pages.length - 1) {
-    currentPage++;
-    updatePages();
-  }
-});
-
-updatePages();
+  updatePages();
 
   // FIN DE LA POPUP (on domload etc)
 });

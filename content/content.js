@@ -1,15 +1,113 @@
 console.log('Content script loaded');
 
+// Configuration globale
+let autoTranslateEnabled = false;
+let selectedLanguage = 'fr';
+let translationObserver = null;
+
+// Charger les préférences au démarrage
+async function loadSettings() {
+  const result = await browser.storage.local.get(['autoTranslate', 'selectedLanguage']);
+  autoTranslateEnabled = result.autoTranslate || false;
+  selectedLanguage = result.selectedLanguage || 'fr';
+  
+  console.log('Settings loaded:', { autoTranslateEnabled, selectedLanguage });
+  
+  // Si auto-translate est activée, lancer la traduction
+  if (autoTranslateEnabled && await isSiteSupported()) {
+    console.log('Auto-translate is enabled and site is supported');
+    waitForDomReady().then(() => {
+      traduireEtRemplacer(selectedLanguage);
+      setupMutationObserver(); // Observer les changements DOM dynamiques
+    });
+  }
+}
+
+// Vérifier si le site est supporté
+async function isSiteSupported() {
+  const domainSelectors = await getDomainSelectors();
+  const currentDomain = window.location.hostname.replace(/^www\./, "");
+  return domainSelectors.hasOwnProperty(currentDomain);
+}
+
+// Attendre que le DOM soit complètement chargé
+function waitForDomReady() {
+  return new Promise((resolve) => {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', resolve, { once: true });
+    } else {
+      // DOM déjà chargé (incluant les images)
+      if (document.readyState === 'interactive') {
+        window.addEventListener('load', resolve, { once: true });
+      } else {
+        resolve();
+      }
+    }
+  });
+}
+
+// Observer les mutations DOM (pour sites dynamiques)
+function setupMutationObserver() {
+  if (translationObserver) {
+    translationObserver.disconnect();
+  }
+  
+  translationObserver = new MutationObserver((mutations) => {
+    // Debounce : attendre 500ms après la dernière mutation
+    clearTimeout(translationObserver.debounceTimer);
+    translationObserver.debounceTimer = setTimeout(() => {
+      if (autoTranslateEnabled) {
+        console.log('DOM mutation detected, re-translating...');
+        traduireEtRemplacer(selectedLanguage);
+      }
+    }, 500);
+  });
+  
+  // Observer les changements du body
+  translationObserver.observe(document.body, {
+    childList: true,
+    subtree: true,
+    characterData: false
+  });
+  
+  console.log('Mutation observer started');
+}
+
+// Gestionnaire des messages du popup
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log('Message received in content.js:', request.action);
+  
   if (request.action === 'translate') {
-    console.log('Message received in content.js:', request.lang);
+    // Traduction manuelle (bouton Translate)
+    selectedLanguage = request.lang;
     traduireEtRemplacer(request.lang);
+  } 
+  else if (request.action === 'autoTranslateToggled') {
+    // Changement de la préférence auto-translate
+    autoTranslateEnabled = request.enabled;
+    selectedLanguage = request.lang;
+    
+    if (autoTranslateEnabled) {
+      console.log('Auto-translate enabled');
+      isSiteSupported().then(supported => {
+        if (supported) {
+          traduireEtRemplacer(selectedLanguage);
+          setupMutationObserver();
+        } else {
+          console.log('Site not supported for auto-translation');
+        }
+      });
+    } else {
+      console.log('Auto-translate disabled');
+      if (translationObserver) {
+        translationObserver.disconnect();
+      }
+    }
   }
 });
 
-
+// Fonctions de traduction
 function getDomainSelectors() {
-  // Charger le fichier JSON contenant les sélecteurs
   return fetch(browser.runtime.getURL('assets/selectors.json'))
     .then(response => response.json())
     .catch(error => console.error('Erreur lors du chargement du fichier JSON:', error));
@@ -29,9 +127,6 @@ async function selectionnerElementsATraduire() {
         if (item.mode === "composite") {
           const parts = parent.querySelectorAll(item.childSelector);
           
-          // Exclure les catégories en vérifiant :
-          // 1. Présence d'une icône mana
-          // 2. OU présence d'un compteur (X) dans le texte
           const isCategory = Array.from(parts).some(span => {
             const hasManaIcon = span.querySelector('.mana');
             const hasCounter = /\(\d+\)/.test(span.textContent);
@@ -39,7 +134,7 @@ async function selectionnerElementsATraduire() {
           });
           
           if (isCategory) {
-            return null; // C'est une catégorie, on l'ignore
+            return null;
           }
           
           return {
@@ -63,15 +158,13 @@ async function selectionnerElementsATraduire() {
 }
 
 function normaliserNomCarte(nom) {
-  // Normalise les séparateurs des cartes doubles/split
-  // "Fire / Ice" ou "Fire/Ice" → "Fire // Ice"
   return nom.replace(/\s*\/\s*/g, ' // ');
 }
 
 async function traduireEtRemplacer(langueCible) {
   const items = await selectionnerElementsATraduire();
 
-  const map = new Map(); // originalEN → [items]
+  const map = new Map();
 
   for (const item of items) {
     let element, original;
@@ -152,10 +245,8 @@ async function traduireEtRemplacer(langueCible) {
     }
   }
 
-  console.log("Traduction terminée (rapide + stable)");
+  console.log("Traduction terminée");
 }
-
-
 
 async function traduireNom(text, targetLanguage) {
   return new Promise((resolve) => {
@@ -165,7 +256,10 @@ async function traduireNom(text, targetLanguage) {
       resolve(response.translatedText);
     }).catch((error) => {
       console.error("Translation error:", error);
-      resolve(text); // Fallback to original text
+      resolve(text);
     });
   });
 }
+
+// Charger les settings au démarrage
+loadSettings();

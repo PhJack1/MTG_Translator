@@ -92,6 +92,9 @@ MTG_Translator/
 4. **Caching**: Speichert neue Übersetzung lokal
 5. **Anzeige**: Ersetzt Text im DOM mit Hover-Verwaltung
 
+### 🤖 Automatische Übersetzung
+Die Erweiterung kann MTG-Karten jetzt automatisch übersetzen, ohne dass eine manuelle Intervention erforderlich ist. Aktivieren Sie einfach das Kontrollkästchen "Automatische Übersetzung" im Popup und wählen Sie Ihre Zielsprache aus. Die Übersetzung erfolgt automatisch beim Laden jeder unterstützten Seite und erkennt auch dynamische DOM-Änderungen (Sites wie Moxfield mit Live-Bearbeitung).
+
 ## 🛠️ Neue Website hinzufügen
 
 Die Erweiterung unterstützt jede Website, indem CSS-Selektoren zu `assets/selectors.json` hinzugefügt werden. Diese Datei ordnet Web-Domänen den HTML-Elementen zu, die Kartennamen enthalten.

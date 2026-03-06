@@ -117,3 +117,54 @@ textarea::placeholder {
   color: #666;
   text-decoration: none;
 }
+
+/* ============================================
+   STYLES POUR LA FONCTIONNALITÉ AUTO-TRANSLATE
+   À AJOUTER À LA FIN DE popup.css
+   ============================================ */
+
+/* Conteneur de la case à cocher */
+.auto-translate-label {
+  user-select: none;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  padding: 8px 12px;
+  margin-top: 10px;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.auto-translate-label:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* La case à cocher en elle-même */
+.auto-translate-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #4CAF50; /* Couleur verte pour la case cochée */
+  flex-shrink: 0;
+}
+
+/* Texte du label */
+.auto-translate-label span {
+  flex-grow: 1;
+  line-height: 1.4;
+}
+
+/* Mode dark-friendly */
+@media (prefers-color-scheme: dark) {
+  .auto-translate-label {
+    color: #ddd;
+  }
+  
+  .auto-translate-label:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+}
