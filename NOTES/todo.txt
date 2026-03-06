@@ -1,7 +1,5 @@
-Blocage UX tant que traduction en cours (évite multiclics et erreurs)
+en cours avec claude : import/export de selectors custom
 
-toastify pour retour user : en particulier traductions en cours, traduction terminée etc
+Blocage UX tant que traduction en cours (évite multiclics et erreurs) avec toastify ?
 
-option auto-trad ? case à cocher mais nécessite de listen tout le temps ? 
-
-importation db en json depuis le github ? oblige à mettre à jour la db à chaque nouveau set mais c'est pas non plus le bout du monde 
+readme : explication dbextract python (conseils pip et pyenv)
