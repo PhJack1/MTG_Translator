@@ -1,5 +1,3 @@
-readme : explication dbextract python (conseils pip et pyenv ?)
-
 Blocage UX tant que traduction en cours (évite multiclics et erreurs) avec des toasts ?
 
 une fois ces deux la : publication sur mozzila pour début diffusion ? 

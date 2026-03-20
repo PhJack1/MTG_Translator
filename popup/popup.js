@@ -8,20 +8,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const importButton = document.getElementById('import-button');
   const exportButton = document.getElementById('export-button');
 
-  let selectedLanguage = 'fr'; // Valeur par défaut
+  let selectedLanguage = 'fr';
 
   console.log('Popup loaded');
 
-  // Fonction pour appliquer les traductions sur tous les éléments avec data-translations
   function applyTranslations(lang) {
     document.querySelectorAll('[data-translations]').forEach(el => {
       try {
         const translations = JSON.parse(el.dataset.translations);
         if (translations[lang]) {
           if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-            el.placeholder = translations[lang]; // Pour les placeholders
+            el.placeholder = translations[lang];
           } else {
-            el.textContent = translations[lang]; // Pour le texte des éléments
+            el.textContent = translations[lang];
           }
         }
       } catch (e) {
@@ -30,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Restaurer la langue sauvegardée
   browser.storage.local.get('selectedLanguage').then(result => {
     if (result.selectedLanguage) {
       selectedLanguage = result.selectedLanguage;
@@ -38,84 +36,92 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       console.log('No stored language, using default FR');
     }
-
-    // Appliquer la sélection graphique et traductions
     flags.forEach(flag => {
-      if (flag.getAttribute('data-lang') === selectedLanguage) {
-        flag.classList.add('selected');
-      } else {
-        flag.classList.remove('selected');
-      }
+      flag.classList.toggle('selected', flag.getAttribute('data-lang') === selectedLanguage);
     });
     applyTranslations(selectedLanguage);
   });
 
-  // ✨ NOUVELLE FONCTIONNALITÉ : Restaurer l'état de l'auto-traduction
   browser.storage.local.get('autoTranslate').then(result => {
     autoTranslateToggle.checked = result.autoTranslate || false;
     console.log('Auto-translate restored:', autoTranslateToggle.checked);
   });
 
-  // ✨ NOUVELLE FONCTIONNALITÉ : Gestion du changement de la case à cocher
   autoTranslateToggle.addEventListener('change', (e) => {
     const isEnabled = e.target.checked;
     browser.storage.local.set({ autoTranslate: isEnabled });
-    
     console.log('Auto-translate toggled:', isEnabled);
-    
-    // Informer le content script du changement
     browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (tabs[0]) {
         browser.tabs.sendMessage(tabs[0].id, {
           action: 'autoTranslateToggled',
           enabled: isEnabled,
-          lang: selectedLanguage
-        }).catch(err => {
-          console.log('Content script not ready or error:', err);
-        });
+          lang: selectedLanguage,
+        }).catch(err => console.log('Content script not ready:', err));
       }
     });
   });
 
-  // Gestion du clic sur les drapeaux
-  flags.forEach(flag => {
-    flag.addEventListener('click', () => {
-      flags.forEach(f => f.classList.remove('selected'));
-      flag.classList.add('selected');
+ flags.forEach(flag => {
+  flag.addEventListener('click', () => {
+    flags.forEach(f => f.classList.remove('selected'));
+    flag.classList.add('selected');
+    selectedLanguage = flag.getAttribute('data-lang');
+    console.log('Selected language:', selectedLanguage);
+    browser.storage.local.set({ selectedLanguage });
+    applyTranslations(selectedLanguage);
 
-      selectedLanguage = flag.getAttribute('data-lang');
-      console.log('Selected language:', selectedLanguage);
-
-      // Sauvegarde dans le stockage
-      browser.storage.local.set({ selectedLanguage });
-
-      // Appliquer les traductions immédiatement
-      applyTranslations(selectedLanguage);
-    });
+    // Si auto-translate actif, relancer la traduction dans la nouvelle langue
+    if (autoTranslateToggle.checked) {
+      browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]) {
+          browser.tabs.sendMessage(tabs[0].id, {
+            action: 'translate',
+            lang: selectedLanguage,
+          }).catch(err => console.log('Error:', err));
+        }
+      });
+    }
   });
+});
 
-  // Bouton translate
   translateButton.addEventListener('click', () => {
+    if (translateButton.disabled) return;
+
     console.log('Translate button clicked, language:', selectedLanguage);
+
+    translateButton.disabled = true;
+    const originalText = translateButton.textContent;
+    translateButton.textContent = '⏳ …';
+
     browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      console.log('Sending message to tab:', tabs[0].id);
-      browser.tabs.sendMessage(tabs[0].id, { action: 'translate', lang: selectedLanguage });
+      if (!tabs[0]) {
+        translateButton.disabled = false;
+        translateButton.textContent = originalText;
+        return;
+      }
+      browser.tabs.sendMessage(tabs[0].id, { action: 'translate', lang: selectedLanguage })
+        .catch(err => console.log('Error sending translate message:', err))
+        .finally(() => {
+          setTimeout(() => {
+            translateButton.disabled = false;
+            translateButton.textContent = originalText;
+          }, 1200);
+        });
     });
   });
 
   saveDbButton.addEventListener('click', () => {
     console.log('SaveDB button clicked, language:', selectedLanguage);
-
     if (!textEn.value.trim() || !textTrad.value.trim()) {
       console.log('Error: One or more fields are empty or contain only spaces.');
       return;
     }
-
     browser.runtime.sendMessage({
       action: 'saveToDb',
       english: textEn.value,
       trad: textTrad.value,
-      lang: selectedLanguage
+      lang: selectedLanguage,
     }).then(response => {
       console.log('Message sent to background script:', response);
     }).catch(error => {
@@ -124,9 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   exportButton.addEventListener('click', () => {
-    browser.runtime.sendMessage({
-      action: 'exportDb'
-    }).then(response => {
+    browser.runtime.sendMessage({ action: 'exportDb' }).then(response => {
       if (response.status === 'success') {
         const blob = new Blob([response.data], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -140,9 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         console.error('Error exporting data:', response.message);
       }
-    }).catch(error => {
-      console.error('Error sending message:', error);
-    });
+    }).catch(error => console.error('Error sending message:', error));
   });
 
   importButton.addEventListener('click', () => {
@@ -151,19 +153,19 @@ document.addEventListener('DOMContentLoaded', () => {
       type: 'popup',
       width: 480,
       height: 300,
-      focused: true
+      focused: true,
     }, (window) => {
       if (window && window.tabs && window.tabs[0]) {
         setTimeout(() => {
-          browser.tabs.sendMessage(window.tabs[0].id, { 
-            action: 'setLanguage', 
-            lang: selectedLanguage 
+          browser.tabs.sendMessage(window.tabs[0].id, {
+            action: 'setLanguage',
+            lang: selectedLanguage,
           }).catch(err => {
             console.log('Message delayed or failed, retrying:', err);
             setTimeout(() => {
-              browser.tabs.sendMessage(window.tabs[0].id, { 
-                action: 'setLanguage', 
-                lang: selectedLanguage 
+              browser.tabs.sendMessage(window.tabs[0].id, {
+                action: 'setLanguage',
+                lang: selectedLanguage,
               }).catch(console.error);
             }, 500);
           });
@@ -172,29 +174,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 🔄 CAROUSEL INFINI AVEC MODULO
   let currentPage = 0;
-  const pages = document.querySelectorAll(".page");
-  const prevBtn = document.getElementById("nav-prev");
-  const nextBtn = document.getElementById("nav-next");
+  const pages = document.querySelectorAll('.page');
+  const prevBtn = document.getElementById('nav-prev');
+  const nextBtn = document.getElementById('nav-next');
 
   function updatePages() {
-    pages.forEach((page, index) => {
-      page.classList.toggle("active", index === currentPage);
-    });
+    pages.forEach((page, index) => page.classList.toggle('active', index === currentPage));
   }
 
-  prevBtn.addEventListener("click", () => {
+  prevBtn.addEventListener('click', () => {
     currentPage = (currentPage - 1 + pages.length) % pages.length;
     updatePages();
   });
 
-  nextBtn.addEventListener("click", () => {
+  nextBtn.addEventListener('click', () => {
     currentPage = (currentPage + 1) % pages.length;
     updatePages();
   });
 
   updatePages();
-
-  // FIN DE LA POPUP (on domload etc)
 });
