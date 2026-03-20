@@ -183,7 +183,7 @@ async function loadSettings() {
   if (autoTranslateEnabled && await isSiteSupported()) {
     console.log('Auto-translate is enabled and site is supported');
     waitForDomReady().then(() => {
-      traduireEtRemplacer(selectedLanguage, true);
+      traduireEtRemplacer(selectedLanguage, false);
       setupMutationObserver();
     });
   }
