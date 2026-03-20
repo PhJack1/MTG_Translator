@@ -158,6 +158,15 @@ const TOAST_I18N = {
     ja: 'このページにカードが見つかりません', ko: '이 페이지에서 카드를 찾을 수 없습니다',
     ru: 'Карты на странице не найдены', zh: '此页面未检测到卡牌', 'zh-TW': '此頁面未偵測到卡牌',
   },
+
+  dbCleared: {
+  fr: 'Base de données supprimée', en: 'Database cleared',
+  es: 'Base de datos eliminada', de: 'Datenbank gelöscht',
+  it: 'Database eliminato', pt: 'Base de dados apagada',
+  ja: 'データベースを削除しました', ko: '데이터베이스가 삭제되었습니다',
+  ru: 'База данных удалена', zh: '数据库已删除', 'zh-TW': '資料庫已刪除',
+},
+
   error: {
     fr: 'Erreur lors de la traduction', en: 'Translation error',
     es: 'Error de traducción', de: 'Übersetzungsfehler',
@@ -260,6 +269,10 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
       if (translationObserver) translationObserver.disconnect();
     }
   }
+else if (request.action === 'showToast') {
+  showToast(tr(request.key), request.type, 3000);
+}
+
 });
 
 // ─── Fonctions de traduction ──────────────────────────────────────────────────

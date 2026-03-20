@@ -160,3 +160,25 @@ textarea::placeholder {
   cursor: not-allowed;
   background: #aaa;
 }
+
+#clearDb-button {
+  background: #e53935;
+  color: #fff;
+  height: 60px;
+  font-size: 14px;
+  margin-top: 20px;
+}
+
+#clearDb-button:hover {
+  background: #c62828;
+}
+
+#clearDb-button.confirming {
+  background: #ff6f00;
+  animation: mtg-pulse 0.6s ease infinite alternate;
+}
+
+@keyframes mtg-pulse {
+  from { opacity: 1; }
+  to   { opacity: 0.75; }
+}

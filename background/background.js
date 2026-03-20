@@ -1,6 +1,5 @@
 import { getTranslation } from "./translations.js";
-import { saveLocalTranslation, importFromJSON, exportToJSON   } from "./db.js";
-
+import { saveLocalTranslation, importFromJSON, exportToJSON, clearDB } from "./db.js";
 
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "translate") {
@@ -35,5 +34,12 @@ if (request.action === 'exportDb') {
         });
         return true; // Keep the message channel open for the response
     }
+
+   if (request.action === 'clearDb') {
+  clearDB()
+    .then(() => sendResponse({ success: true }))
+    .catch(() => sendResponse({ success: false }));
+  return true;
+} 
 
 });

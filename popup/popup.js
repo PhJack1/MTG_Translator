@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const saveDbButton = document.getElementById('saveDb-button');
   const importButton = document.getElementById('import-button');
   const exportButton = document.getElementById('export-button');
+const clearDbButton = document.getElementById('clearDb-button');
+
 
   let selectedLanguage = 'fr';
 
@@ -174,6 +176,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+
+
+
   let currentPage = 0;
   const pages = document.querySelectorAll('.page');
   const prevBtn = document.getElementById('nav-prev');
@@ -193,5 +198,51 @@ document.addEventListener('DOMContentLoaded', () => {
     updatePages();
   });
 
+clearDbButton.addEventListener('click', () => {
+  if (clearDbButton.dataset.confirming === 'true') {
+    // Deuxième clic = confirmation
+    clearDbButton.dataset.confirming = 'false';
+    clearDbButton.textContent = clearDbButton.dataset.originalText;
+    clearDbButton.classList.remove('confirming');
+    clearTimeout(clearDbButton.confirmTimer);
+
+   browser.runtime.sendMessage({ action: 'clearDb' }).then(response => {
+  browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (tabs[0]) {
+      browser.tabs.sendMessage(tabs[0].id, { action: 'showToast', type: 'success', key: 'dbCleared' });
+    }
+  });
+}).catch(error => {
+  console.error('Error clearing database:', error);
+});
+
+  } else {
+    // Premier clic = demande de confirmation
+    clearDbButton.dataset.confirming = 'true';
+    clearDbButton.dataset.originalText = clearDbButton.textContent;
+    clearDbButton.classList.add('confirming');
+
+    const confirmText = selectedLanguage === 'fr' ? '⚠️ Confirmer la suppression ?'
+      : selectedLanguage === 'es' ? '⚠️ ¿Confirmar eliminación?'
+      : selectedLanguage === 'de' ? '⚠️ Löschen bestätigen?'
+      : selectedLanguage === 'it' ? '⚠️ Confermare eliminazione?'
+      : selectedLanguage === 'pt' ? '⚠️ Confirmar exclusão?'
+      : selectedLanguage === 'ja' ? '⚠️ 削除を確認しますか？'
+      : selectedLanguage === 'ko' ? '⚠️ 삭제를 확인하시겠습니까?'
+      : selectedLanguage === 'ru' ? '⚠️ Подтвердить удаление?'
+      : selectedLanguage === 'zh' ? '⚠️ 确认删除？'
+      : selectedLanguage === 'zh-TW' ? '⚠️ 確認刪除？'
+      : '⚠️ Confirm deletion?';
+
+    clearDbButton.textContent = confirmText;
+
+    // Annulation automatique après 3 secondes
+    clearDbButton.confirmTimer = setTimeout(() => {
+      clearDbButton.dataset.confirming = 'false';
+      clearDbButton.textContent = clearDbButton.dataset.originalText;
+      clearDbButton.classList.remove('confirming');
+    }, 3000);
+  }
+});
   updatePages();
 });
