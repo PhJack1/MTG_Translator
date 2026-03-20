@@ -200,3 +200,12 @@ export async function importFromJSON(jsonData, onProgress = null) {
 
     return true;
 }
+
+export async function clearDB() {
+  dbPromise = null;
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.deleteDatabase('mtgTranslations');
+    req.onsuccess = () => resolve(true);
+    req.onerror = () => reject(req.error);
+  });
+}
