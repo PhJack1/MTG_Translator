@@ -7,13 +7,40 @@ document.addEventListener('DOMContentLoaded', () => {
   const saveDbButton = document.getElementById('saveDb-button');
   const importButton = document.getElementById('import-button');
   const exportButton = document.getElementById('export-button');
-const clearDbButton = document.getElementById('clearDb-button');
-
+  const clearDbButton = document.getElementById('clearDb-button');
+  const fixedTop = document.querySelector('.fixed-top');
 
   let selectedLanguage = 'fr';
 
   console.log('Popup loaded');
 
+  // ─── Verrouillage UI pendant la traduction ──────────────────────────────────
+  function setUiBusy(busy) {
+    fixedTop.classList.toggle('busy', busy);
+    translateButton.disabled = busy;
+    autoTranslateToggle.disabled = busy;
+    flags.forEach(f => {
+      if (busy) {
+        f.dataset.blocked = 'true';
+      } else {
+        delete f.dataset.blocked;
+      }
+    });
+  }
+
+  // Lire l'état initial depuis le storage (cas popup ouvert pendant une traduction)
+  browser.storage.local.get('isTranslating').then(result => {
+    if (result.isTranslating) setUiBusy(true);
+  });
+
+  // Réagir en temps réel aux changements d'état
+  browser.storage.onChanged.addListener((changes, area) => {
+    if (area === 'local' && 'isTranslating' in changes) {
+      setUiBusy(changes.isTranslating.newValue === true);
+    }
+  });
+
+  // ─── Traductions UI popup ───────────────────────────────────────────────────
   function applyTranslations(lang) {
     document.querySelectorAll('[data-translations]').forEach(el => {
       try {
@@ -49,6 +76,7 @@ const clearDbButton = document.getElementById('clearDb-button');
     console.log('Auto-translate restored:', autoTranslateToggle.checked);
   });
 
+  // ─── Toggle auto-translate ──────────────────────────────────────────────────
   autoTranslateToggle.addEventListener('change', (e) => {
     const isEnabled = e.target.checked;
     browser.storage.local.set({ autoTranslate: isEnabled });
@@ -64,55 +92,45 @@ const clearDbButton = document.getElementById('clearDb-button');
     });
   });
 
- flags.forEach(flag => {
-  flag.addEventListener('click', () => {
-    flags.forEach(f => f.classList.remove('selected'));
-    flag.classList.add('selected');
-    selectedLanguage = flag.getAttribute('data-lang');
-    console.log('Selected language:', selectedLanguage);
-    browser.storage.local.set({ selectedLanguage });
-    applyTranslations(selectedLanguage);
+  // ─── Sélection de drapeau ───────────────────────────────────────────────────
+  flags.forEach(flag => {
+    flag.addEventListener('click', () => {
+      if (flag.dataset.blocked === 'true') return; // bloqué pendant traduction
 
-    // Si auto-translate actif, relancer la traduction dans la nouvelle langue
-    if (autoTranslateToggle.checked) {
-      browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (tabs[0]) {
-          browser.tabs.sendMessage(tabs[0].id, {
-            action: 'translate',
-            lang: selectedLanguage,
-          }).catch(err => console.log('Error:', err));
-        }
-      });
-    }
+      flags.forEach(f => f.classList.remove('selected'));
+      flag.classList.add('selected');
+      selectedLanguage = flag.getAttribute('data-lang');
+      console.log('Selected language:', selectedLanguage);
+      browser.storage.local.set({ selectedLanguage });
+      applyTranslations(selectedLanguage);
+
+      if (autoTranslateToggle.checked) {
+        browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          if (tabs[0]) {
+            browser.tabs.sendMessage(tabs[0].id, {
+              action: 'translate',
+              lang: selectedLanguage,
+            }).catch(err => console.log('Error:', err));
+          }
+        });
+      }
+    });
   });
-});
 
+  // ─── Bouton traduire ────────────────────────────────────────────────────────
   translateButton.addEventListener('click', () => {
     if (translateButton.disabled) return;
 
     console.log('Translate button clicked, language:', selectedLanguage);
 
-    translateButton.disabled = true;
-    const originalText = translateButton.textContent;
-    translateButton.textContent = '⏳ …';
-
     browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (!tabs[0]) {
-        translateButton.disabled = false;
-        translateButton.textContent = originalText;
-        return;
-      }
+      if (!tabs[0]) return;
       browser.tabs.sendMessage(tabs[0].id, { action: 'translate', lang: selectedLanguage })
-        .catch(err => console.log('Error sending translate message:', err))
-        .finally(() => {
-          setTimeout(() => {
-            translateButton.disabled = false;
-            translateButton.textContent = originalText;
-          }, 1200);
-        });
+        .catch(err => console.log('Error sending translate message:', err));
     });
   });
 
+  // ─── Boutons DB ─────────────────────────────────────────────────────────────
   saveDbButton.addEventListener('click', () => {
     console.log('SaveDB button clicked, language:', selectedLanguage);
     if (!textEn.value.trim() || !textTrad.value.trim()) {
@@ -176,9 +194,7 @@ const clearDbButton = document.getElementById('clearDb-button');
     });
   });
 
-
-
-
+  // ─── Navigation pages ───────────────────────────────────────────────────────
   let currentPage = 0;
   const pages = document.querySelectorAll('.page');
   const prevBtn = document.getElementById('nav-prev');
@@ -198,51 +214,50 @@ const clearDbButton = document.getElementById('clearDb-button');
     updatePages();
   });
 
-clearDbButton.addEventListener('click', () => {
-  if (clearDbButton.dataset.confirming === 'true') {
-    // Deuxième clic = confirmation
-    clearDbButton.dataset.confirming = 'false';
-    clearDbButton.textContent = clearDbButton.dataset.originalText;
-    clearDbButton.classList.remove('confirming');
-    clearTimeout(clearDbButton.confirmTimer);
-
-   browser.runtime.sendMessage({ action: 'clearDb' }).then(response => {
-  browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    if (tabs[0]) {
-      browser.tabs.sendMessage(tabs[0].id, { action: 'showToast', type: 'success', key: 'dbCleared' });
-    }
-  });
-}).catch(error => {
-  console.error('Error clearing database:', error);
-});
-
-  } else {
-    // Premier clic = demande de confirmation
-    clearDbButton.dataset.confirming = 'true';
-    clearDbButton.dataset.originalText = clearDbButton.textContent;
-    clearDbButton.classList.add('confirming');
-
-    const confirmText = selectedLanguage === 'fr' ? '⚠️ Confirmer la suppression ?'
-      : selectedLanguage === 'es' ? '⚠️ ¿Confirmar eliminación?'
-      : selectedLanguage === 'de' ? '⚠️ Löschen bestätigen?'
-      : selectedLanguage === 'it' ? '⚠️ Confermare eliminazione?'
-      : selectedLanguage === 'pt' ? '⚠️ Confirmar exclusão?'
-      : selectedLanguage === 'ja' ? '⚠️ 削除を確認しますか？'
-      : selectedLanguage === 'ko' ? '⚠️ 삭제를 확인하시겠습니까?'
-      : selectedLanguage === 'ru' ? '⚠️ Подтвердить удаление?'
-      : selectedLanguage === 'zh' ? '⚠️ 确认删除？'
-      : selectedLanguage === 'zh-TW' ? '⚠️ 確認刪除？'
-      : '⚠️ Confirm deletion?';
-
-    clearDbButton.textContent = confirmText;
-
-    // Annulation automatique après 3 secondes
-    clearDbButton.confirmTimer = setTimeout(() => {
+  // ─── Clear DB avec confirmation ─────────────────────────────────────────────
+  clearDbButton.addEventListener('click', () => {
+    if (clearDbButton.dataset.confirming === 'true') {
       clearDbButton.dataset.confirming = 'false';
       clearDbButton.textContent = clearDbButton.dataset.originalText;
       clearDbButton.classList.remove('confirming');
-    }, 3000);
-  }
-});
+      clearTimeout(clearDbButton.confirmTimer);
+
+      browser.runtime.sendMessage({ action: 'clearDb' }).then(response => {
+        browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          if (tabs[0]) {
+            browser.tabs.sendMessage(tabs[0].id, { action: 'showToast', type: 'success', key: 'dbCleared' });
+          }
+        });
+      }).catch(error => {
+        console.error('Error clearing database:', error);
+      });
+
+    } else {
+      clearDbButton.dataset.confirming = 'true';
+      clearDbButton.dataset.originalText = clearDbButton.textContent;
+      clearDbButton.classList.add('confirming');
+
+      const confirmText = selectedLanguage === 'fr' ? '⚠️ Confirmer la suppression ?'
+        : selectedLanguage === 'es' ? '⚠️ ¿Confirmar eliminación?'
+        : selectedLanguage === 'de' ? '⚠️ Löschen bestätigen?'
+        : selectedLanguage === 'it' ? '⚠️ Confermare eliminazione?'
+        : selectedLanguage === 'pt' ? '⚠️ Confirmar exclusão?'
+        : selectedLanguage === 'ja' ? '⚠️ 削除を確認しますか？'
+        : selectedLanguage === 'ko' ? '⚠️ 삭제를 확인하시겠습니까?'
+        : selectedLanguage === 'ru' ? '⚠️ Подтвердить удаление?'
+        : selectedLanguage === 'zh' ? '⚠️ 确认删除？'
+        : selectedLanguage === 'zh-TW' ? '⚠️ 確認刪除？'
+        : '⚠️ Confirm deletion?';
+
+      clearDbButton.textContent = confirmText;
+
+      clearDbButton.confirmTimer = setTimeout(() => {
+        clearDbButton.dataset.confirming = 'false';
+        clearDbButton.textContent = clearDbButton.dataset.originalText;
+        clearDbButton.classList.remove('confirming');
+      }, 3000);
+    }
+  });
+
   updatePages();
 });
