@@ -1,5 +1,3 @@
-en cours avec claude : import/export de selectors custom : VRAIMENT ?
-
 readme : explication dbextract python (conseils pip et pyenv ?)
 
 Blocage UX tant que traduction en cours (évite multiclics et erreurs) avec des toasts ?
