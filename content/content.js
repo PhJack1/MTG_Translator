@@ -131,13 +131,6 @@ const TOAST_I18N = {
     de: 'Übersetzung abgeschlossen', it: 'Traduzione completata', pt: 'Tradução concluída',
     ja: '翻訳完了', ko: '번역 완료', ru: 'Перевод завершён', zh: '翻译完成', 'zh-TW': '翻譯完成',
   },
-  busy: {
-    fr: 'Traduction déjà en cours, patientez…', en: 'Translation already running, please wait…',
-    es: 'Traducción en curso, espere…', de: 'Übersetzung läuft bereits, bitte warten…',
-    it: 'Traduzione in corso, attendere…', pt: 'Tradução em curso, aguarde…',
-    ja: '翻訳中です、お待ちください…', ko: '번역이 진행 중입니다, 기다려주세요…',
-    ru: 'Перевод уже выполняется, подождите…', zh: '翻译正在进行，请稍候…', 'zh-TW': '翻譯進行中，請稍候…',
-  },
   autoOn: {
     fr: 'Traduction automatique activée', en: 'Auto-translate enabled',
     es: 'Traducción automática activada', de: 'Automatische Übersetzung aktiviert',
@@ -322,19 +315,13 @@ function normaliserNomCarte(nom) {
   return nom.replace(/\s*\/\s*/g, ' // ');
 }
 
-// ─── Sync de l'état de traduction vers le popup ───────────────────────────────
-function setTranslatingState(busy, sync = true) {
-  isTranslating = busy;
-  if (sync) browser.storage.local.set({ isTranslating: busy });
-}
-
 async function traduireEtRemplacer(langueCible, silent = false) {
   if (isTranslating) {
     console.log('Translation already in progress, skipping.');
-    if (!silent) showToast(tr('busy'), 'warning', 3500);
     return;
   }
-  setTranslatingState(true, !silent);
+  isTranslating = true;
+  if (!silent) browser.storage.local.set({ isTranslating: true });
 
   let dismissLoading = null;
   if (!silent) {
@@ -396,6 +383,8 @@ async function traduireEtRemplacer(langueCible, silent = false) {
     for (const [original, list] of map) {
       const translated = dict[original];
 
+      if (!translated) continue;
+
       for (const item of list) {
         const element = item.composite ? item.element : item;
 
@@ -438,7 +427,8 @@ async function traduireEtRemplacer(langueCible, silent = false) {
       showToast(tr('error'), 'error', 4000);
     }
   } finally {
-    setTranslatingState(false, !silent);
+    isTranslating = false;
+    if (!silent) browser.storage.local.set({ isTranslating: false });
   }
 }
 

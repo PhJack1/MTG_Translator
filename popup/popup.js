@@ -8,35 +8,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const importButton = document.getElementById('import-button');
   const exportButton = document.getElementById('export-button');
   const clearDbButton = document.getElementById('clearDb-button');
-  const fixedTop = document.querySelector('.fixed-top');
 
   let selectedLanguage = 'fr';
 
   console.log('Popup loaded');
 
-  // ─── Verrouillage UI pendant la traduction ──────────────────────────────────
-  function setUiBusy(busy) {
-    fixedTop.classList.toggle('busy', busy);
-    translateButton.disabled = busy;
-    autoTranslateToggle.disabled = busy;
-    flags.forEach(f => {
-      if (busy) {
-        f.dataset.blocked = 'true';
-      } else {
-        delete f.dataset.blocked;
-      }
-    });
-  }
-
-  // Lire l'état initial depuis le storage (cas popup ouvert pendant une traduction)
+  // ─── Désactivation du bouton pendant la traduction ──────────────────────────
   browser.storage.local.get('isTranslating').then(result => {
-    if (result.isTranslating) setUiBusy(true);
+    translateButton.disabled = result.isTranslating === true;
   });
 
-  // Réagir en temps réel aux changements d'état
   browser.storage.onChanged.addListener((changes, area) => {
     if (area === 'local' && 'isTranslating' in changes) {
-      setUiBusy(changes.isTranslating.newValue === true);
+      translateButton.disabled = changes.isTranslating.newValue === true;
     }
   });
 
@@ -95,8 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // ─── Sélection de drapeau ───────────────────────────────────────────────────
   flags.forEach(flag => {
     flag.addEventListener('click', () => {
-      if (flag.dataset.blocked === 'true') return; // bloqué pendant traduction
-
       flags.forEach(f => f.classList.remove('selected'));
       flag.classList.add('selected');
       selectedLanguage = flag.getAttribute('data-lang');
@@ -104,25 +86,36 @@ document.addEventListener('DOMContentLoaded', () => {
       browser.storage.local.set({ selectedLanguage });
       applyTranslations(selectedLanguage);
 
+      // Désactiver l'auto-translate si actif, puis lancer une traduction manuelle
       if (autoTranslateToggle.checked) {
+        autoTranslateToggle.checked = false;
+        browser.storage.local.set({ autoTranslate: false });
         browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           if (tabs[0]) {
             browser.tabs.sendMessage(tabs[0].id, {
-              action: 'translate',
+              action: 'autoTranslateToggled',
+              enabled: false,
               lang: selectedLanguage,
             }).catch(err => console.log('Error:', err));
           }
         });
       }
+
+      browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]) {
+          browser.tabs.sendMessage(tabs[0].id, {
+            action: 'translate',
+            lang: selectedLanguage,
+          }).catch(err => console.log('Error:', err));
+        }
+      });
     });
   });
 
   // ─── Bouton traduire ────────────────────────────────────────────────────────
   translateButton.addEventListener('click', () => {
     if (translateButton.disabled) return;
-
     console.log('Translate button clicked, language:', selectedLanguage);
-
     browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (!tabs[0]) return;
       browser.tabs.sendMessage(tabs[0].id, { action: 'translate', lang: selectedLanguage })
