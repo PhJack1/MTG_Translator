@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "MTG Cards Translator",
   "version": "1.0",
-  "description": "Traduit dans la langue cible les cartes MTG trouvées sur MTGTOP8 uniquement pour l'instant",
+  "description": "Translates MTG card names on MTG websites",
   "icons": {
     "16": "icon16.png",
     "32": "icon32.png",
@@ -12,11 +12,10 @@
     "128": "icon128.png"
   },
   "browser_specific_settings": {
-  "gecko": {
-    "id": "MTGCT@mtgct.com"
-  }
-},
-
+    "gecko": {
+      "id": "MTGCT@mtgct.com"
+    }
+  },
   "permissions": [
     "tabs",
     "activeTab",
@@ -33,7 +32,7 @@
   },
   "background": {
     "scripts": ["background/background.js"],
-    "type" : "module",
+    "type": "module",
     "persistent": false
   },
   "content_scripts": [

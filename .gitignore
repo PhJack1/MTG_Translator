@@ -1,1 +1,15 @@
+# Build outputs
+dist/
+
+# Notes personnelles
 NOTES/
+
+# Base de données locale de développement
+dbextract/DBPERSOS/
+
+# Zips de soumission
+*.zip
+
+# Divers
+node_modules/
+.DS_Store

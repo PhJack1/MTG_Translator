@@ -1,3 +1,5 @@
+const browser = globalThis.browser ?? globalThis.chrome;
+
 document.addEventListener('DOMContentLoaded', () => {
   const flags = document.querySelectorAll('.flag');
   const translateButton = document.getElementById('translate-button');

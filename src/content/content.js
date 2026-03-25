@@ -1,3 +1,5 @@
+const browser = globalThis.browser ?? globalThis.chrome;
+
 console.log('Content script loaded');
 
 // ─── Configuration globale ────────────────────────────────────────────────────

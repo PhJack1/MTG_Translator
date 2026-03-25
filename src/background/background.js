@@ -1,6 +1,8 @@
 import { getTranslation } from "./translations.js";
 import { saveLocalTranslation, importFromJSON, exportToJSON, clearDB } from "./db.js";
 
+const browser = globalThis.browser ?? globalThis.chrome;
+
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "translate") {
     // Call the generic translation function

@@ -1,5 +1,7 @@
 import { importFromJSON } from './db.js';
 
+const browser = globalThis.browser ?? globalThis.chrome;
+
 const dropzone = document.getElementById('dropzone');
 const input = document.getElementById('fileInput');
 const pick = document.getElementById('pick');
