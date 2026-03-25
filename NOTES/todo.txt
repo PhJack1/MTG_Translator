@@ -1,7 +1,7 @@
-Blocage UX tant que traduction en cours (évite multiclics et erreurs) avec des toasts ?
+conversion Chrome/polyfill explication
+refaire les readme bien
 
 une fois ces deux la : publication sur mozzila pour début diffusion ? 
 
-conversion Chrome/polyfill explication
 
 conversion/dev vers ANDROID !!!
