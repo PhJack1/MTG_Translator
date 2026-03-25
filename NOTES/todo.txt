@@ -1,7 +1,0 @@
-conversion Chrome/polyfill explication
-refaire les readme bien
-
-une fois ces deux la : publication sur mozzila pour début diffusion ? 
-
-
-conversion/dev vers ANDROID !!!
