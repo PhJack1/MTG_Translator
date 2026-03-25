@@ -161,6 +161,23 @@ textarea::placeholder {
   background: #aaa;
 }
 
+/* ─── Verrouillage UI pendant la traduction ───────────────────────────────── */
+.fixed-top.busy .flag {
+  opacity: 0.25;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.fixed-top.busy .flag.selected {
+  opacity: 0.4;
+}
+
+.fixed-top.busy .auto-translate-label {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 #clearDb-button {
   background: #e53935;
   color: #fff;

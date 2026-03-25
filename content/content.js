@@ -102,10 +102,18 @@ function showToast(message, type = 'info', duration = 3000, spinner = false) {
   container.appendChild(toast);
   requestAnimationFrame(() => requestAnimationFrame(() => toast.classList.add('show')));
 
-  const dismiss = () => {
+  const dismiss = () => new Promise(resolve => {
     toast.classList.add('hide');
-    toast.addEventListener('transitionend', () => toast.remove(), { once: true });
-  };
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      toast.remove();
+      resolve();
+    };
+    toast.addEventListener('transitionend', finish, { once: true });
+    setTimeout(finish, 350); // fallback si transitionend ne se déclenche pas
+  });
 
   if (duration > 0) setTimeout(dismiss, duration);
   return dismiss;
@@ -122,13 +130,6 @@ const TOAST_I18N = {
     fr: 'Traduction terminée', en: 'Translation done', es: 'Traducción completada',
     de: 'Übersetzung abgeschlossen', it: 'Traduzione completata', pt: 'Tradução concluída',
     ja: '翻訳完了', ko: '번역 완료', ru: 'Перевод завершён', zh: '翻译完成', 'zh-TW': '翻譯完成',
-  },
-  busy: {
-    fr: 'Traduction déjà en cours, patientez…', en: 'Translation already running, please wait…',
-    es: 'Traducción en curso, espere…', de: 'Übersetzung läuft bereits, bitte warten…',
-    it: 'Traduzione in corso, attendere…', pt: 'Tradução em curso, aguarde…',
-    ja: '翻訳中です、お待ちください…', ko: '번역이 진행 중입니다, 기다려주세요…',
-    ru: 'Перевод уже выполняется, подождите…', zh: '翻译正在进行，请稍候…', 'zh-TW': '翻譯進行中，請稍候…',
   },
   autoOn: {
     fr: 'Traduction automatique activée', en: 'Auto-translate enabled',
@@ -158,15 +159,13 @@ const TOAST_I18N = {
     ja: 'このページにカードが見つかりません', ko: '이 페이지에서 카드를 찾을 수 없습니다',
     ru: 'Карты на странице не найдены', zh: '此页面未检测到卡牌', 'zh-TW': '此頁面未偵測到卡牌',
   },
-
   dbCleared: {
-  fr: 'Base de données supprimée', en: 'Database cleared',
-  es: 'Base de datos eliminada', de: 'Datenbank gelöscht',
-  it: 'Database eliminato', pt: 'Base de dados apagada',
-  ja: 'データベースを削除しました', ko: '데이터베이스가 삭제되었습니다',
-  ru: 'База данных удалена', zh: '数据库已删除', 'zh-TW': '資料庫已刪除',
-},
-
+    fr: 'Base de données supprimée', en: 'Database cleared',
+    es: 'Base de datos eliminada', de: 'Datenbank gelöscht',
+    it: 'Database eliminato', pt: 'Base de dados apagada',
+    ja: 'データベースを削除しました', ko: '데이터베이스가 삭제되었습니다',
+    ru: 'База данных удалена', zh: '数据库已删除', 'zh-TW': '資料庫已刪除',
+  },
   error: {
     fr: 'Erreur lors de la traduction', en: 'Translation error',
     es: 'Error de traducción', de: 'Übersetzungsfehler',
@@ -269,10 +268,9 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
       if (translationObserver) translationObserver.disconnect();
     }
   }
-else if (request.action === 'showToast') {
-  showToast(tr(request.key), request.type, 3000);
-}
-
+  else if (request.action === 'showToast') {
+    showToast(tr(request.key), request.type, 3000);
+  }
 });
 
 // ─── Fonctions de traduction ──────────────────────────────────────────────────
@@ -320,10 +318,10 @@ function normaliserNomCarte(nom) {
 async function traduireEtRemplacer(langueCible, silent = false) {
   if (isTranslating) {
     console.log('Translation already in progress, skipping.');
-    if (!silent) showToast(tr('busy'), 'warning', 3500);
     return;
   }
   isTranslating = true;
+  if (!silent) browser.storage.local.set({ isTranslating: true });
 
   let dismissLoading = null;
   if (!silent) {
@@ -335,7 +333,7 @@ async function traduireEtRemplacer(langueCible, silent = false) {
 
     if (items.length === 0) {
       if (!silent) {
-        if (dismissLoading) dismissLoading();
+        if (dismissLoading) await dismissLoading();
         showToast(tr('noCards'), 'warning', 4000);
       }
       return;
@@ -385,6 +383,8 @@ async function traduireEtRemplacer(langueCible, silent = false) {
     for (const [original, list] of map) {
       const translated = dict[original];
 
+      if (!translated) continue;
+
       for (const item of list) {
         const element = item.composite ? item.element : item;
 
@@ -417,17 +417,18 @@ async function traduireEtRemplacer(langueCible, silent = false) {
 
     console.log('Traduction terminée');
     if (!silent) {
-      if (dismissLoading) dismissLoading();
+      if (dismissLoading) await dismissLoading();
       showToast(tr('done'), 'success', 3000);
     }
   } catch (err) {
     console.error('Translation failed:', err);
     if (!silent) {
-      if (dismissLoading) dismissLoading();
+      if (dismissLoading) await dismissLoading();
       showToast(tr('error'), 'error', 4000);
     }
   } finally {
     isTranslating = false;
+    if (!silent) browser.storage.local.set({ isTranslating: false });
   }
 }
 
