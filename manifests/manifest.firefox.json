@@ -11,11 +11,14 @@
     "96": "icon96.png",
     "128": "icon128.png"
   },
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "MTGCT@mtgct.com"
+ "browser_specific_settings": {
+  "gecko": {
+    "id": "MTGCT@mtgct.com",
+    "data_collection_permissions": {
+      "required": ["none"]
     }
-  },
+  }
+},
   "permissions": [
     "tabs",
     "activeTab",
